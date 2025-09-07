@@ -810,6 +810,54 @@
             });
         });
         
+        // --- DATA LISTENERS ---
+        function setupListeners() {
+            unsubscribeListeners.forEach(unsub => unsub());
+            unsubscribeListeners = [];
+
+            const groupRef = doc(db, "groups", GROUP_ID);
+            const unsubGroup = onSnapshot(groupRef, (snap) => {
+                if (snap.exists()) {
+                    groupConfig = snap.data();
+                    renderDepositPage();
+                }
+            });
+            unsubscribeListeners.push(unsubGroup);
+
+            const usersQuery = query(collection(db, "users"));
+            const unsubUsers = onSnapshot(usersQuery, (snap) => {
+                allMembers = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderApp(); 
+            });
+            unsubscribeListeners.push(unsubUsers);
+            
+            const transQuery = query(collection(db, "groups", GROUP_ID, "transactions"));
+            const unsubTrans = onSnapshot(transQuery, (snap) => {
+                allTransactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderDashboard();
+                renderTransactions();
+                renderLoanRecon();
+                renderFutureValue();
+            });
+            unsubscribeListeners.push(unsubTrans);
+
+            const loansQuery = query(collection(db, "groups", GROUP_ID, "loans"));
+            const unsubLoans = onSnapshot(loansQuery, (snap) => {
+                allLoans = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderMyLoans();
+                renderAdminView();
+            });
+            unsubscribeListeners.push(unsubLoans);
+
+            const penaltiesQuery = query(collection(db, "groups", GROUP_ID, "penalties"));
+            const unsubPenalties = onSnapshot(penaltiesQuery, (snap) => {
+                allPenalties = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderPenalties();
+            });
+            unsubscribeListeners.push(unsubPenalties);
+        }
+
+
         // The rest of the script (render functions, calculations, etc.) remains unchanged.
         // ... (all other functions are here)
     </script>
