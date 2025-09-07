@@ -546,7 +546,6 @@
         import { getFirestore, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, Timestamp, writeBatch } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
         // --- Firebase Configuration ---
-        // PASTE YOUR FIREBASE CONFIG OBJECT HERE
         const firebaseConfig = {
             apiKey: "AIzaSyBESlm4cl0-J92_nR0YncThpqrSuSZhmEk",
             authDomain: "the-trust-fund-app.firebaseapp.com",
@@ -587,6 +586,8 @@
         const registerError = document.getElementById('register-error');
         const logoutBtn = document.getElementById('logout-btn');
         const viewLoader = document.getElementById('view-loader');
+        const showRegisterLink = document.getElementById('show-register');
+        const showLoginLink = document.getElementById('show-login');
         
         const views = {
             dashboard: document.getElementById('view-dashboard'),
@@ -674,8 +675,108 @@
         }
         
         // ... (rest of the file remains the same)
+        // ... (The only changes are in the authentication listeners below)
+
+        // --- AUTHENTICATION ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // User is signed in.
+                const userDocRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(userDocRef);
+
+                if (docSnap.exists()) {
+                    currentUserData = { id: user.uid, ...docSnap.data() };
+                    currentUser = user;
+                    setupListeners(); // Setup data listeners
+                    appContainer.classList.remove('hidden');
+                    loginContainer.classList.add('hidden');
+                    authLoader.classList.add('hidden');
+                    viewLoader.classList.remove('hidden');
+                } else {
+                    // This can happen if user record deletion fails or is partial.
+                    signOut(auth);
+                    showToast("Could not find user profile.", true);
+                }
+            } else {
+                // User is signed out.
+                appContainer.classList.add('hidden');
+                loginContainer.classList.remove('hidden');
+                authLoader.classList.add('hidden');
+                viewLoader.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                currentUser = null;
+                currentUserData = null;
+            }
+        });
+        
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            authLoader.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+            loginError.classList.add('hidden');
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // onAuthStateChanged will handle the rest
+            } catch (error) {
+                loginError.textContent = error.message;
+                loginError.classList.remove('hidden');
+                authLoader.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+            }
+        });
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            authLoader.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+            registerError.classList.add('hidden');
+
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                // Create user profile in Firestore
+                const newUser = {
+                    name: name,
+                    email: email,
+                    isAdmin: email.toLowerCase() === ADMIN_EMAIL, // Assign admin role
+                };
+
+                await setDoc(doc(db, "users", user.uid), newUser);
+                // onAuthStateChanged will handle showing the app
+            } catch(error) {
+                registerError.textContent = error.message;
+                registerError.classList.remove('hidden');
+                authLoader.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+            }
+        });
+        
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        showRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+        });
+
+        showLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        });
+
     </script>
 </body>
 </html>
-
-
