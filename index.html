@@ -665,7 +665,9 @@
         function showView(viewName) {
             Object.values(views).forEach(view => view.classList.add('hidden'));
             viewLoader.classList.add('hidden');
-            views[viewName].classList.remove('hidden');
+            if (views[viewName]) {
+                views[viewName].classList.remove('hidden');
+            }
             
             Object.values(navLinks).forEach(link => link.classList.remove('active'));
             if(navLinks[viewName]) {
@@ -674,8 +676,27 @@
             }
         }
         
-        // ... (rest of the file remains the same)
-        // ... (The only changes are in the authentication listeners below)
+        function renderApp() {
+            if (!currentUserData) return;
+            userInfo.innerHTML = `
+                <div class="font-semibold">${currentUserData.name}</div>
+                <div class="text-sm text-gray-500">${currentUserData.isAdmin ? "Administrator" : "Member"}</div>
+            `;
+            navLinks.admin.classList.toggle('hidden', !currentUserData.isAdmin);
+            navLinks.transactions.classList.toggle('hidden', !currentUserData.isAdmin);
+            depositAdminPanel.classList.toggle('hidden', !currentUserData.isAdmin);
+            penaltyAdminPanel.classList.toggle('hidden', !currentUserData.isAdmin);
+            
+            renderDashboard();
+            renderMyLoans();
+            renderAdminView();
+            renderTransactions();
+            renderNotifications();
+            renderDepositPage();
+            renderFutureValue();
+            renderLoanRecon();
+            renderPenalties();
+        }
 
         // --- AUTHENTICATION ---
         onAuthStateChanged(auth, async (user) => {
@@ -693,7 +714,6 @@
                     authLoader.classList.add('hidden');
                     viewLoader.classList.remove('hidden');
                 } else {
-                    // This can happen if user record deletion fails or is partial.
                     signOut(auth);
                     showToast("Could not find user profile.", true);
                 }
@@ -721,7 +741,6 @@
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // onAuthStateChanged will handle the rest
             } catch (error) {
                 loginError.textContent = error.message;
                 loginError.classList.remove('hidden');
@@ -744,15 +763,13 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
                 
-                // Create user profile in Firestore
                 const newUser = {
                     name: name,
                     email: email,
-                    isAdmin: email.toLowerCase() === ADMIN_EMAIL, // Assign admin role
+                    isAdmin: email.toLowerCase() === ADMIN_EMAIL,
                 };
 
                 await setDoc(doc(db, "users", user.uid), newUser);
-                // onAuthStateChanged will handle showing the app
             } catch(error) {
                 registerError.textContent = error.message;
                 registerError.classList.remove('hidden');
@@ -777,6 +794,9 @@
             loginForm.classList.remove('hidden');
         });
 
+        // The rest of the script (render functions, calculations, etc.) remains unchanged.
+        // ...
     </script>
 </body>
 </html>
+
