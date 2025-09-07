@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Trust Fund - Savings Group Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .sidebar-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+        .notification-dot {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 10px;
+            height: 10px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .editable-cell input {
+            width: 100%;
+            padding: 2px 4px;
+            border: 1px solid #4f46e5;
+            border-radius: 4px;
+            text-align: right;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Login Page -->
+    <div id="login-container" class="flex items-center justify-center h-screen bg-gray-200">
+        <div class="w-full max-w-md">
+            <div id="auth-loader" class="text-center hidden">
+                <div class="loader inline-block"></div>
+                <p class="mt-4 text-gray-600">Please wait...</p>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="login-form" class="bg-white shadow-lg rounded-xl px-8 pt-6 pb-8 mb-4">
+                <div class="mb-8 text-center">
+                    <svg class="w-16 h-16 mx-auto text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <h1 class="text-3xl font-bold text-gray-800 mt-2">The Trust Fund</h1>
+                    <p class="text-gray-500">Please sign in to continue</p>
+                </div>
+                <p id="login-error" class="text-red-500 text-xs text-center mb-4 hidden"></p>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="login-email">Email</label>
+                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" id="login-email" type="email" placeholder="email@example.com" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="login-password">Password</label>
+                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" id="login-password" type="password" placeholder="******************" required>
+                </div>
+                <div class="flex items-center justify-between">
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline" type="submit">Sign In</button>
+                </div>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    Don't have an account? <a href="#" id="show-register" class="font-medium text-indigo-600 hover:text-indigo-500">Create one</a>
+                </p>
+            </form>
+
+            <!-- Registration Form -->
+            <form id="register-form" class="bg-white shadow-lg rounded-xl px-8 pt-6 pb-8 mb-4 hidden">
+                 <div class="mb-8 text-center">
+                    <h1 class="text-3xl font-bold text-gray-800">Create Account</h1>
+                    <p class="text-gray-500">Join The Trust Fund</p>
+                </div>
+                 <p id="register-error" class="text-red-500 text-xs text-center mb-4 hidden"></p>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="register-name">Full Name</label>
+                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" id="register-name" type="text" placeholder="John Doe" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="register-email">Email</label>
+                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" id="register-email" type="email" placeholder="email@example.com" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="register-password">Password</label>
+                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" id="register-password" type="password" placeholder="******************" required>
+                </div>
+                <div class="flex items-center justify-between">
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline" type="submit">Create Account</button>
+                </div>
+                 <p class="text-center text-sm text-gray-600 mt-4">
+                    Already have an account? <a href="#" id="show-login" class="font-medium text-indigo-600 hover:text-indigo-500">Sign In</a>
+                </p>
+            </form>
+
+             <p class="text-center text-gray-500 text-xs">
+                &copy;2025 The Trust Fund. All rights reserved.
+            </p>
+        </div>
+    </div>
+
+
+    <!-- Main Application -->
+    <div id="app-container" class="hidden">
+        <div class="flex h-screen">
+            <!-- Sidebar -->
+            <aside class="w-64 bg-gray-800 text-white flex flex-col">
+                <div class="p-4 text-2xl font-bold border-b border-gray-700 flex items-center space-x-3">
+                    <svg class="w-10 h-10 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span>The Trust Fund</span>
+                </div>
+                <nav class="flex-1 p-4 space-y-2">
+                    <a href="#" id="nav-dashboard" class="sidebar-link active flex items-center p-3 rounded-lg">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        Dashboard
+                    </a>
+                     <a href="#" id="nav-deposit" class="sidebar-link flex items-center p-3 rounded-lg">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm-5-12v-2m0 4h.01"></path></svg>
+                        Deposit
+                    </a>
+                    <a href="#" id="nav-request-loan" class="sidebar-link flex items-center p-3 rounded-lg">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Request Loan
+                    </a>
+                     <a href="#" id="nav-my-loans" class="sidebar-link flex items-center p-3 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 10v-1h12v1a2 2 0 01-2 2H6a2 2 0 01-2-2z" /></svg>
+                        My Loans
+                    </a>
+                    <a href="#" id="nav-recon" class="sidebar-link flex items-center p-3 rounded-lg">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M12 8h.01M15 8h.01M15 5h.01M12 5h.01M9 5h.01M4 7h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V8a1 1 0 011-1z"></path></svg>
+                        Loan Recon
+                    </a>
+                    <a href="#" id="nav-future" class="sidebar-link flex items-center p-3 rounded-lg">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        Future Value
+                    </a>
+                    <a href="#" id="nav-penalties" class="sidebar-link flex items-center p-3 rounded-lg">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Penalties
+                    </a>
+                    <a href="#" id="nav-admin" class="sidebar-link flex items-center p-3 rounded-lg hidden">
+                       <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        Admin Approvals
+                    </a>
+                    <a href="#" id="nav-transactions" class="sidebar-link flex items-center p-3 rounded-lg hidden">
+                       <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Transactions
+                    </a>
+                </nav>
+            </aside>
+    
+            <!-- Main Content -->
+            <main class="flex-1 flex flex-col">
+                <!-- Header -->
+                <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+                    <h1 id="header-title" class="text-2xl font-semibold text-gray-700">Dashboard</h1>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button id="notification-bell" class="relative p-2 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                                 <span id="notification-indicator" class="notification-dot hidden"></span>
+                            </button>
+                            <div id="notification-panel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg border z-10">
+                                <div class="p-3 border-b font-semibold">Notifications</div>
+                                <div id="notification-list" class="p-2 max-h-96 overflow-y-auto">
+                                    <!-- Notifications will be dynamically inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                        <div id="user-info" class="text-right">
+                            <!-- User info is dynamic -->
+                        </div>
+                        <button id="logout-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg text-sm">Logout</button>
+                    </div>
+                </header>
+    
+                <!-- Page Content -->
+                <div class="flex-1 p-6 overflow-y-auto">
+                    
+                    <!-- Universal Loader -->
+                    <div id="view-loader" class="text-center p-10">
+                        <div class="loader inline-block"></div>
+                        <p class="mt-4 text-gray-600">Loading Data...</p>
+                    </div>
+
+                    <!-- Dashboard View -->
+                    <div id="view-dashboard" class="hidden">
+                        <!-- Stat Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div class="bg-white p-6 rounded-xl shadow-md">
+                                <h3 class="text-gray-500 font-medium">Total Group Savings</h3>
+                                <p id="group-savings-stat" class="text-3xl font-bold text-indigo-600">ZMW 0.00</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-md">
+                                <h3 class="text-gray-500 font-medium">Funds Available for Loans</h3>
+                                <p id="group-liquidity-stat" class="text-3xl font-bold text-green-600">ZMW 0.00</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-md">
+                                <h3 class="text-gray-500 font-medium">My Total Savings</h3>
+                                <p id="my-savings" class="text-3xl font-bold text-gray-800">ZMW 0.00</p>
+                            </div>
+                        </div>
+    
+                         <!-- Liquidity and Chart Section -->
+                        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
+                            <!-- Liquidity Table -->
+                            <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-md">
+                                <h3 class="text-xl font-semibold mb-4">Group Liquidity (Monthly)</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left text-sm">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="p-2 font-medium text-gray-600"></th>
+                                                <th class="p-2 font-medium text-gray-600 text-right">JAN</th>
+                                                <th class="p-2 font-medium text-gray-600 text-right">FEB</th>
+                                                <th class="p-2 font-medium text-gray-600 text-right">MAR</th>
+                                                <th class="p-2 font-medium text-gray-600 text-right">APR</th>
+                                                <th class="p-2 font-medium text-gray-600 text-right">MAY</th>
+                                                <th class="p-2 font-medium text-gray-600 text-right">JUN</th>
+                                                <th class="p-2 font-medium text-gray-600 text-right">JUL</th>
+                                                <th class="p-2 font-medium text-gray-600 text-right">AUG</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="liquidity-table-body" class="divide-y divide-gray-200">
+                                            <!-- Data will be dynamically inserted here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- Fund Distribution Chart -->
+                            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md flex flex-col justify-center items-center">
+                                 <h3 class="text-xl font-semibold mb-4 text-center">Fund Distribution</h3>
+                                 <div class="w-full max-w-xs mx-auto">
+                                    <canvas id="liquidity-chart"></canvas>
+                                 </div>
+                            </div>
+                        </div>
+    
+                        <!-- Members Overview Table -->
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-xl font-semibold mb-4">Member Overview</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-sm">
+                                    <thead id="member-overview-head" class="bg-gray-50">
+                                        <!-- Header generated by JS -->
+                                    </thead>
+                                    <tbody id="member-overview-body">
+                                        <!-- Data will be dynamically inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Deposit View -->
+                    <div id="view-deposit" class="hidden">
+                        <!-- Admin Control Panel -->
+                        <div id="deposit-admin-panel" class="hidden bg-indigo-50 p-6 rounded-xl shadow-md mb-6 border-l-4 border-indigo-500">
+                             <h2 class="text-2xl font-bold mb-4 text-gray-800">Deposit Period Control</h2>
+                             <div class="flex items-center space-x-4">
+                                <select id="deposit-month-select" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                    <option selected>Choose a month...</option>
+                                    <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+                                    <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+                                    <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+                                    <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+                                </select>
+                                <button id="open-deposits-btn" class="bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700">Open Deposits</button>
+                                <button id="close-deposits-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700">Close Deposits</button>
+                                <div>
+                                    <span class="font-medium">Status:</span>
+                                    <span id="deposit-status-text" class="font-bold text-gray-700"></span>
+                                </div>
+                             </div>
+                        </div>
+                        <!-- Member Deposit Form -->
+                        <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-md">
+                            <h2 class="text-2xl font-bold mb-2 text-gray-800">Monthly Deposit Declaration</h2>
+                            <p id="deposit-period-message" class="text-center font-semibold mb-6 p-3 rounded-md"></p>
+                            <form id="deposit-form">
+                                <fieldset id="deposit-fieldset">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div>
+                                            <label for="save-amount" class="block text-sm font-medium text-gray-700 mb-2">Amount to Save</label>
+                                            <input type="number" id="save-amount" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="0.00">
+                                        </div>
+                                        <div>
+                                            <label for="repay-amount" class="block text-sm font-medium text-gray-700 mb-2">Amount to Repay</label>
+                                            <input type="number" id="repay-amount" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="0.00">
+                                        </div>
+                                        <div>
+                                            <label for="borrow-amount" class="block text-sm font-medium text-gray-700 mb-2">Amount to Borrow</label>
+                                            <input type="number" id="borrow-amount" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="mt-8 w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                        Submit My Declaration
+                                    </button>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Request Loan View -->
+                    <div id="view-request-loan" class="hidden">
+                        <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-md">
+                            <h2 class="text-2xl font-bold mb-6 text-gray-800">Request a New Loan</h2>
+                            <form id="loan-request-form">
+                                <div class="mb-4">
+                                    <label for="loan-amount" class="block text-sm font-medium text-gray-700 mb-2">Loan Amount (ZMW)</label>
+                                    <input type="number" id="loan-amount" name="loan-amount" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., 5000" required>
+                                    <p id="max-loan-text" class="text-xs text-gray-500 mt-1">Your current savings allow for a maximum loan of ZMW 0.00</p>
+                                </div>
+                                 <div class="mb-6 mt-6">
+                                    <p class="text-xs text-gray-500 text-center">By submitting this loan application, you acknowledge that you have read and understood the terms in the Trust Fund Commitment Form</p>
+                                </div>
+                                <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                    Submit Loan Application
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+    
+                    <!-- My Loans View -->
+                    <div id="view-my-loans" class="hidden">
+                         <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-xl font-semibold mb-4">My Loan History & Status</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="p-3 font-medium text-gray-600">Request Date</th>
+                                            <th class="p-3 font-medium text-gray-600">Amount</th>
+                                            <th class="p-3 font-medium text-gray-600">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="my-loans-table">
+                                        <!-- My loans will be dynamically inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+    
+                     <!-- Loan Recon View -->
+                    <div id="view-recon" class="hidden">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-xl font-semibold mb-4">Loan Reconciliation Statements</h3>
+                            <div id="recon-statements-container" class="space-y-6">
+                                <!-- Statements will be dynamically inserted here -->
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Future Value View -->
+                    <div id="view-future" class="hidden">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-xl font-semibold mb-4">Future Value Projections</h3>
+                            <div id="future-value-container" class="overflow-x-auto">
+                               <!-- Future value table will be dynamically inserted here -->
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Penalties View -->
+                    <div id="view-penalties" class="hidden">
+                        <div id="penalty-admin-panel" class="hidden bg-indigo-50 p-6 rounded-xl shadow-md mb-6 border-l-4 border-indigo-500">
+                             <h2 class="text-2xl font-bold mb-4 text-gray-800">Add New Penalty</h2>
+                             <form id="penalty-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                                <div>
+                                    <label for="penalty-member-select" class="block text-sm font-medium text-gray-700 mb-1">Member</label>
+                                    <select id="penalty-member-select" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option>Select Member...</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="penalty-month-select" class="block text-sm font-medium text-gray-700 mb-1">Month</label>
+                                    <select id="penalty-month-select" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option>Select Month...</option>
+                                        <option value="1">JAN</option><option value="2">FEB</option><option value="3">MAR</option><option value="4">APR</option><option value="5">MAY</option><option value="6">JUN</option>
+                                        <option value="7">JUL</option><option value="8">AUG</option><option value="9">SEP</option><option value="10">OCT</option><option value="11">NOV</option><option value="12">DEC</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-end space-x-4">
+                                    <fieldset>
+                                        <legend class="block text-sm font-medium text-gray-700 mb-1">Reason(s)</legend>
+                                        <div class="flex items-center space-x-3 pt-1">
+                                             <label class="flex items-center text-sm"><input type="checkbox" name="penalty-reason" value="Did not honor declaration" data-value="150" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-1"> Declaration</label>
+                                             <label class="flex items-center text-sm"><input type="checkbox" name="penalty-reason" value="Absent" data-value="100" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-1"> Absent</label>
+                                             <label class="flex items-center text-sm"><input type="checkbox" name="penalty-reason" value="Late for meeting" data-value="50" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-1"> Late</label>
+                                        </div>
+                                    </fieldset>
+                                    <div class="pl-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Total Penalty</label>
+                                        <p id="penalty-total-display" class="text-2xl font-bold text-indigo-600">ZMW 0</p>
+                                    </div>
+                                    <button type="submit" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 self-end">Add Penalty</button>
+                                </div>
+                             </form>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-xl font-semibold mb-4">Monthly Penalties</h3>
+                            <div id="penalties-container" class="overflow-x-auto">
+                               <!-- Penalties table will be dynamically inserted here -->
+                            </div>
+                        </div>
+                    </div>
+    
+    
+                    <!-- Admin View -->
+                    <div id="view-admin" class="hidden">
+                         <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-xl font-semibold mb-4">Pending Loan Approvals</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="p-3 font-medium text-gray-600">Requestor</th>
+                                            <th class="p-3 font-medium text-gray-600">Amount</th>
+                                            <th class="p-3 font-medium text-gray-600">Date</th>
+                                            <th class="p-3 font-medium text-gray-600 text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-approval-table">
+                                        <!-- Loan requests will be dynamically inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Transactions View -->
+                    <div id="view-transactions" class="hidden">
+                        <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                            <h3 class="text-xl font-semibold mb-4">Monthly Savings Transactions</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left min-w-[800px]">
+                                    <thead id="transactions-savings-head" class="bg-gray-50"></thead>
+                                    <tbody id="transactions-savings-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-xl font-semibold mb-4">Monthly Loan Repayments</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left min-w-[800px]">
+                                    <thead id="transactions-repayments-head" class="bg-gray-50"></thead>
+                                    <tbody id="transactions-repayments-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md mt-6">
+                            <h3 class="text-xl font-semibold mb-4">Monthly Amounts Borrowed</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left min-w-[800px]">
+                                    <thead id="transactions-borrowed-head" class="bg-gray-50"></thead>
+                                    <tbody id="transactions-borrowed-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+    
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="hidden fixed bottom-5 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-xl transition-opacity duration-300">
+        <p id="toast-message"></p>
+    </div>
+    
+    <!-- Rejection Reason Modal -->
+    <div id="rejection-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Reason for Rejection</h3>
+                <div class="mt-4 px-7 py-3">
+                    <div class="space-y-2 text-left">
+                        <label class="flex items-center">
+                            <input type="radio" name="rejection-reason" value="Insufficient funds available" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                            <span class="ml-3 text-sm text-gray-700">Insufficient funds available</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="rejection-reason" value="Not Eligible to borrow that amount" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                            <span class="ml-3 text-sm text-gray-700">Not Eligible to borrow that amount</span>
+                        </label>
+                    </div>
+                    <p id="rejection-error" class="text-red-500 text-xs italic text-center mt-2 hidden">Please select a reason.</p>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button id="submit-rejection-btn" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300">Submit Rejection</button>
+                    <button id="cancel-rejection-btn" class="px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md w-auto ml-2 hover:bg-gray-300 focus:outline-none">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // --- Firebase SDK Imports ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+        import { getFirestore, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, Timestamp, writeBatch } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+        // --- Firebase Configuration ---
+        // PASTE YOUR FIREBASE CONFIG OBJECT HERE
+        const firebaseConfig = {
+            apiKey: "AIzaSyBESlm4cl0-J92_nR0YncThpqrSuSZhmEk",
+            authDomain: "the-trust-fund-app.firebaseapp.com",
+            projectId: "the-trust-fund-app",
+            storageBucket: "the-trust-fund-app.appspot.com",
+            messagingSenderId: "810030208272",
+            appId: "1:810030208272:web:d87cede9eb9392f5d30195"
+        };
+        
+        // --- App Configuration ---
+        const GROUP_ID = "main"; // You can change this if you run multiple groups
+        const ADMIN_EMAIL = "markmoonga@gmail.com";
+
+        // --- Firebase Initialization ---
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- STATE ---
+        let currentUser = null;
+        let currentUserData = null; // To hold user profile from Firestore
+        let liquidityChart = null;
+        let loanIdToReject = null;
+
+        let allMembers = [];
+        let allTransactions = [];
+        let allLoans = [];
+        let allPenalties = [];
+        let groupConfig = { isDepositPeriodOpen: false, depositMonth: null };
+
+        // --- DOM ELEMENTS ---
+        const loginContainer = document.getElementById('login-container');
+        const authLoader = document.getElementById('auth-loader');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const appContainer = document.getElementById('app-container');
+        const loginError = document.getElementById('login-error');
+        const registerError = document.getElementById('register-error');
+        const logoutBtn = document.getElementById('logout-btn');
+        const viewLoader = document.getElementById('view-loader');
+        
+        const views = {
+            dashboard: document.getElementById('view-dashboard'),
+            deposit: document.getElementById('view-deposit'),
+            requestLoan: document.getElementById('view-request-loan'),
+            myLoans: document.getElementById('view-my-loans'),
+            recon: document.getElementById('view-recon'),
+            future: document.getElementById('view-future'),
+            penalties: document.getElementById('view-penalties'),
+            admin: document.getElementById('view-admin'),
+            transactions: document.getElementById('view-transactions'),
+        };
+        const navLinks = {
+            dashboard: document.getElementById('nav-dashboard'),
+            deposit: document.getElementById('nav-deposit'),
+            requestLoan: document.getElementById('nav-request-loan'),
+            myLoans: document.getElementById('nav-my-loans'),
+            recon: document.getElementById('nav-recon'),
+            future: document.getElementById('nav-future'),
+            penalties: document.getElementById('nav-penalties'),
+            admin: document.getElementById('nav-admin'),
+            transactions: document.getElementById('nav-transactions'),
+        };
+        const headerTitle = document.getElementById('header-title');
+        const memberOverviewHead = document.getElementById('member-overview-head');
+        const memberOverviewBody = document.getElementById('member-overview-body');
+        const myLoansTable = document.getElementById('my-loans-table');
+        const adminApprovalTable = document.getElementById('admin-approval-table');
+        const transactionsSavingsHead = document.getElementById('transactions-savings-head');
+        const transactionsSavingsBody = document.getElementById('transactions-savings-body');
+        const transactionsRepaymentsHead = document.getElementById('transactions-repayments-head');
+        const transactionsRepaymentsBody = document.getElementById('transactions-repayments-body');
+        const transactionsBorrowedHead = document.getElementById('transactions-borrowed-head');
+        const transactionsBorrowedBody = document.getElementById('transactions-borrowed-body');
+        const loanRequestForm = document.getElementById('loan-request-form');
+        const userInfo = document.getElementById('user-info');
+        const notificationBell = document.getElementById('notification-bell');
+        const notificationPanel = document.getElementById('notification-panel');
+        const notificationList = document.getElementById('notification-list');
+        const notificationIndicator = document.getElementById('notification-indicator');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        const futureValueContainer = document.getElementById('future-value-container');
+        const reconStatementsContainer = document.getElementById('recon-statements-container');
+        const penaltiesContainer = document.getElementById('penalties-container');
+        const liquidityTableBody = document.getElementById('liquidity-table-body');
+        
+        // Modal Elements
+        const rejectionModal = document.getElementById('rejection-modal');
+        const submitRejectionBtn = document.getElementById('submit-rejection-btn');
+        const cancelRejectionBtn = document.getElementById('cancel-rejection-btn');
+
+        // Deposit Page Elements
+        const depositAdminPanel = document.getElementById('deposit-admin-panel');
+        const depositForm = document.getElementById('deposit-form');
+        const depositFieldset = document.getElementById('deposit-fieldset');
+        const depositStatusText = document.getElementById('deposit-status-text');
+        const depositPeriodMessage = document.getElementById('deposit-period-message');
+        const openDepositsBtn = document.getElementById('open-deposits-btn');
+        const closeDepositsBtn = document.getElementById('close-deposits-btn');
+        const depositMonthSelect = document.getElementById('deposit-month-select');
+
+        // Penalty Page Elements
+        const penaltyAdminPanel = document.getElementById('penalty-admin-panel');
+        const penaltyForm = document.getElementById('penalty-form');
+        const penaltyTotalDisplay = document.getElementById('penalty-total-display');
+
+        // --- FORMATTERS ---
+        const formatCurrency = (amount) => `ZMW ${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        const formatCurrencySimple = (amount) => (amount && amount != 0) ? amount.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}) : '-';
+        const getMonthName = (monthNumber) => new Date(2025, monthNumber - 1, 1).toLocaleString('default', { month: 'long' });
+        const getMonthShortName = (monthNumber) => new Date(2025, monthNumber - 1, 1).toLocaleString('default', { month: 'short' }).toUpperCase();
+        
+        // --- MAIN APP LOGIC ---
+        function showView(viewName) {
+            Object.values(views).forEach(view => view.classList.add('hidden'));
+            viewLoader.classList.add('hidden');
+            views[viewName].classList.remove('hidden');
+            
+            Object.values(navLinks).forEach(link => link.classList.remove('active'));
+            if(navLinks[viewName]) {
+                navLinks[viewName].classList.add('active');
+                headerTitle.textContent = navLinks[viewName].textContent.trim();
+            }
+        }
+        
+        // ... (rest of the file remains the same)
+    </script>
+</body>
+</html>
+
