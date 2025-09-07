@@ -74,33 +74,68 @@
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
-
     <!-- Login Page -->
     <div id="login-container" class="flex items-center justify-center h-screen bg-gray-200">
-        <div class="w-full max-w-md text-center">
+        <div class="w-full max-w-md">
             <div id="auth-loader" class="text-center hidden">
                 <div class="loader inline-block"></div>
-                <p class="mt-4 text-gray-600">Authenticating...</p>
+                <p class="mt-4 text-gray-600">Please wait...</p>
             </div>
-            <div id="login-box" class="bg-white shadow-lg rounded-xl px-8 pt-6 pb-8 mb-4">
+           
+            <!-- Login Form -->
+            <form id="login-form" class="bg-white shadow-lg rounded-xl px-8 pt-6 pb-8 mb-4">
                 <div class="mb-8 text-center">
-                     <svg class="w-16 h-16 mx-auto text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <svg class="w-16 h-16 mx-auto text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     <h1 class="text-3xl font-bold text-gray-800 mt-2">The Trust Fund</h1>
-                    <p class="text-gray-500">Please sign in with Google to continue</p>
+                    <p class="text-gray-500">Please sign in to continue</p>
                 </div>
-                 <p id="login-error" class="text-red-500 text-xs italic mb-4 hidden"></p>
-                <button id="google-login-btn" class="w-full bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm flex items-center justify-center">
-                    <svg class="w-5 h-5 mr-2" viewBox="0 0 48 48"><path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l8.35 6.52C12.91 13.46 18.06 9.5 24 9.5z"></path><path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.42-4.55H24v8.51h12.8c-.57 3.02-2.31 5.45-4.85 7.01l8.35 6.52C43.92 38.31 47 31.97 47 24.55z"></path><path fill="#FBBC05" d="M10.91 28.19c-1.18-3.54-1.18-7.49 0-11.03l-8.35-6.52C.33 16.57 0 21.62 0 24s.33 7.43 2.56 11.35l8.35-6.52z"></path><path fill="#EA4335" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-8.35-6.52c-2.18 1.45-4.96 2.3-8.04 2.3-5.95 0-11.09-3.96-12.93-9.31l-8.35 6.52C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></svg>
-                    Sign in with Google
-                </button>
-            </div>
+                <p id="login-error" class="text-red-500 text-xs text-center mb-4 hidden"></p>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="login-email">Email</label>
+                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" id="login-email" type="email" placeholder="email@example.com" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="login-password">Password</label>
+                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" id="login-password" type="password" placeholder="******************" required>
+                </div>
+                <div class="flex items-center justify-between">
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline" type="submit">Sign In</button>
+                </div>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    Don't have an account? <a href="#" id="show-register" class="font-medium text-indigo-600 hover:text-indigo-500">Create one</a>
+                </p>
+            </form>
+            <!-- Registration Form -->
+            <form id="register-form" class="bg-white shadow-lg rounded-xl px-8 pt-6 pb-8 mb-4 hidden">
+                 <div class="mb-8 text-center">
+                    <h1 class="text-3xl font-bold text-gray-800">Create Account</h1>
+                    <p class="text-gray-500">Join The Trust Fund</p>
+                </div>
+                 <p id="register-error" class="text-red-500 text-xs text-center mb-4 hidden"></p>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="register-name">Full Name</label>
+                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" id="register-name" type="text" placeholder="John Doe" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="register-email">Email</label>
+                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" id="register-email" type="email" placeholder="email@example.com" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="register-password">Password</label>
+                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" id="register-password" type="password" placeholder="******************" required>
+                </div>
+                <div class="flex items-center justify-between">
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline" type="submit">Create Account</button>
+                </div>
+                 <p class="text-center text-sm text-gray-600 mt-4">
+                    Already have an account? <a href="#" id="show-login" class="font-medium text-indigo-600 hover:text-indigo-500">Sign In</a>
+                </p>
+            </form>
              <p class="text-center text-gray-500 text-xs">
                 &copy;2025 The Trust Fund. All rights reserved.
             </p>
         </div>
     </div>
-
-
     <!-- Main Application -->
     <div id="app-container" class="hidden">
         <div class="flex h-screen">
@@ -149,7 +184,7 @@
                     </a>
                 </nav>
             </aside>
-    
+   
             <!-- Main Content -->
             <main class="flex-1 flex flex-col">
                 <!-- Header -->
@@ -174,16 +209,15 @@
                         <button id="logout-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg text-sm">Logout</button>
                     </div>
                 </header>
-    
+   
                 <!-- Page Content -->
                 <div class="flex-1 p-6 overflow-y-auto">
-                    
+                   
                     <!-- Universal Loader -->
                     <div id="view-loader" class="text-center p-10">
                         <div class="loader inline-block"></div>
                         <p class="mt-4 text-gray-600">Loading Data...</p>
                     </div>
-
                     <!-- Dashboard View -->
                     <div id="view-dashboard" class="hidden">
                         <!-- Stat Cards -->
@@ -201,7 +235,7 @@
                                 <p id="my-savings" class="text-3xl font-bold text-gray-800">ZMW 0.00</p>
                             </div>
                         </div>
-    
+   
                          <!-- Liquidity and Chart Section -->
                         <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
                             <!-- Liquidity Table -->
@@ -236,7 +270,7 @@
                                  </div>
                             </div>
                         </div>
-    
+   
                         <!-- Members Overview Table -->
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <h3 class="text-xl font-semibold mb-4">Member Overview</h3>
@@ -252,7 +286,7 @@
                             </div>
                         </div>
                     </div>
-    
+   
                     <!-- Deposit View -->
                     <div id="view-deposit" class="hidden">
                         <!-- Admin Control Panel -->
@@ -301,7 +335,6 @@
                             </form>
                         </div>
                     </div>
-
                     <!-- Request Loan View -->
                     <div id="view-request-loan" class="hidden">
                         <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-md">
@@ -321,7 +354,7 @@
                             </form>
                         </div>
                     </div>
-    
+   
                     <!-- My Loans View -->
                     <div id="view-my-loans" class="hidden">
                          <div class="bg-white p-6 rounded-xl shadow-md">
@@ -342,7 +375,7 @@
                             </div>
                         </div>
                     </div>
-    
+   
                      <!-- Loan Recon View -->
                     <div id="view-recon" class="hidden">
                         <div class="bg-white p-6 rounded-xl shadow-md">
@@ -352,7 +385,7 @@
                             </div>
                         </div>
                     </div>
-    
+   
                     <!-- Future Value View -->
                     <div id="view-future" class="hidden">
                         <div class="bg-white p-6 rounded-xl shadow-md">
@@ -362,7 +395,7 @@
                             </div>
                         </div>
                     </div>
-    
+   
                     <!-- Penalties View -->
                     <div id="view-penalties" class="hidden">
                         <div id="penalty-admin-panel" class="hidden bg-indigo-50 p-6 rounded-xl shadow-md mb-6 border-l-4 border-indigo-500">
@@ -399,7 +432,6 @@
                                 </div>
                              </form>
                         </div>
-
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <h3 class="text-xl font-semibold mb-4">Monthly Penalties</h3>
                             <div id="penalties-container" class="overflow-x-auto">
@@ -407,8 +439,8 @@
                             </div>
                         </div>
                     </div>
-    
-    
+   
+   
                     <!-- Admin View -->
                     <div id="view-admin" class="hidden">
                          <div class="bg-white p-6 rounded-xl shadow-md">
@@ -430,7 +462,7 @@
                             </div>
                         </div>
                     </div>
-    
+   
                     <!-- Transactions View -->
                     <div id="view-transactions" class="hidden">
                         <div class="bg-white p-6 rounded-xl shadow-md mb-6">
@@ -461,17 +493,16 @@
                             </div>
                         </div>
                     </div>
-    
+   
                 </div>
             </main>
         </div>
     </div>
-
     <!-- Toast Notification -->
     <div id="toast" class="hidden fixed bottom-5 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-xl transition-opacity duration-300">
         <p id="toast-message"></p>
     </div>
-    
+   
     <!-- Rejection Reason Modal -->
     <div id="rejection-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
@@ -497,55 +528,52 @@
             </div>
         </div>
     </div>
-
-
     <script type="module">
         // --- Firebase SDK Imports ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
         import { getFirestore, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, Timestamp, writeBatch } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-
         // --- Firebase Configuration ---
         const firebaseConfig = {
-            apiKey: "AIzaSyBESlm4cl0-J92_nR0YncThpqrSuSZhmEk",
-            authDomain: "the-trust-fund-app.firebaseapp.com",
-            projectId: "the-trust-fund-app",
-            storageBucket: "the-trust-fund-app.appspot.com",
-            messagingSenderId: "810030208272",
-            appId: "1:810030208272:web:d87cede9eb9392f5d30195"
+          apiKey: "AIzaSyBESlm4cl0-J92_nR0YncThpqrSuSZhmEk",
+          authDomain: "the-trust-fund-app.firebaseapp.com",
+          projectId: "the-trust-fund-app",
+          storageBucket: "the-trust-fund-app.firebasestorage.app",
+          messagingSenderId: "810030208272",
+          appId: "1:810030208272:web:d87cede9eb9392f5d30195"
         };
-        
+       
         // --- App Configuration ---
         const GROUP_ID = "main"; // You can change this if you run multiple groups
         const ADMIN_EMAIL = "markmoonga@gmail.com";
-
         // --- Firebase Initialization ---
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-
         // --- STATE ---
         let currentUser = null;
         let currentUserData = null; // To hold user profile from Firestore
         let liquidityChart = null;
         let loanIdToReject = null;
-
         let allMembers = [];
         let allTransactions = [];
         let allLoans = [];
         let allPenalties = [];
         let groupConfig = { isDepositPeriodOpen: false, depositMonth: null };
-
+        let isRegistering = false;
         // --- DOM ELEMENTS ---
         const loginContainer = document.getElementById('login-container');
         const authLoader = document.getElementById('auth-loader');
-        const loginBox = document.getElementById('login-box');
-        const googleLoginBtn = document.getElementById('google-login-btn');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
         const appContainer = document.getElementById('app-container');
         const loginError = document.getElementById('login-error');
+        const registerError = document.getElementById('register-error');
         const logoutBtn = document.getElementById('logout-btn');
         const viewLoader = document.getElementById('view-loader');
-        
+        const showRegisterLink = document.getElementById('show-register');
+        const showLoginLink = document.getElementById('show-login');
+       
         const views = {
             dashboard: document.getElementById('view-dashboard'),
             deposit: document.getElementById('view-deposit'),
@@ -591,12 +619,11 @@
         const reconStatementsContainer = document.getElementById('recon-statements-container');
         const penaltiesContainer = document.getElementById('penalties-container');
         const liquidityTableBody = document.getElementById('liquidity-table-body');
-        
+       
         // Modal Elements
         const rejectionModal = document.getElementById('rejection-modal');
         const submitRejectionBtn = document.getElementById('submit-rejection-btn');
         const cancelRejectionBtn = document.getElementById('cancel-rejection-btn');
-
         // Deposit Page Elements
         const depositAdminPanel = document.getElementById('deposit-admin-panel');
         const depositForm = document.getElementById('deposit-form');
@@ -606,18 +633,16 @@
         const openDepositsBtn = document.getElementById('open-deposits-btn');
         const closeDepositsBtn = document.getElementById('close-deposits-btn');
         const depositMonthSelect = document.getElementById('deposit-month-select');
-
         // Penalty Page Elements
         const penaltyAdminPanel = document.getElementById('penalty-admin-panel');
         const penaltyForm = document.getElementById('penalty-form');
         const penaltyTotalDisplay = document.getElementById('penalty-total-display');
-
         // --- FORMATTERS ---
         const formatCurrency = (amount) => `ZMW ${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         const formatCurrencySimple = (amount) => (amount && amount != 0) ? amount.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}) : '-';
         const getMonthName = (monthNumber) => new Date(2025, monthNumber - 1, 1).toLocaleString('default', { month: 'long' });
         const getMonthShortName = (monthNumber) => new Date(2025, monthNumber - 1, 1).toLocaleString('default', { month: 'short' }).toUpperCase();
-        
+       
         // --- MAIN APP LOGIC ---
         function showView(viewName) {
             Object.values(views).forEach(view => view.classList.add('hidden'));
@@ -625,14 +650,14 @@
             if (views[viewName]) {
                 views[viewName].classList.remove('hidden');
             }
-            
+           
             Object.values(navLinks).forEach(link => link.classList.remove('active'));
             if(navLinks[viewName]) {
                 navLinks[viewName].classList.add('active');
                 headerTitle.textContent = navLinks[viewName].textContent.trim();
             }
         }
-        
+       
         function renderApp() {
             if (!currentUserData) return;
             userInfo.innerHTML = `
@@ -643,7 +668,7 @@
             navLinks.transactions.classList.toggle('hidden', !currentUserData.isAdmin);
             depositAdminPanel.classList.toggle('hidden', !currentUserData.isAdmin);
             penaltyAdminPanel.classList.toggle('hidden', !currentUserData.isAdmin);
-            
+           
             renderDashboard();
             renderMyLoans();
             renderAdminView();
@@ -654,80 +679,112 @@
             renderLoanRecon();
             renderPenalties();
         }
-
         // --- AUTHENTICATION ---
-        onAuthStateChanged(auth, async (user) => {
+        async function handleAuthUser(user) {
             try {
-                if (user) {
-                    const userDocRef = doc(db, "users", user.uid);
-                    const docSnap = await getDoc(userDocRef);
-
-                    if (docSnap.exists()) {
-                        currentUserData = { id: user.uid, ...docSnap.data() };
-                        currentUser = user;
-                        setupListeners(); 
-                        appContainer.classList.remove('hidden');
-                        loginContainer.classList.add('hidden');
-                        authLoader.classList.add('hidden');
-                        viewLoader.classList.remove('hidden');
-                    } else {
-                        // First time Google sign-in
-                        const newUser = {
-                            name: user.displayName,
-                            email: user.email,
-                            isAdmin: user.email.toLowerCase() === ADMIN_EMAIL,
-                        };
-                        await setDoc(doc(db, "users", user.uid), newUser);
-                        currentUserData = { id: user.uid, ...newUser };
-                        currentUser = user;
-                        setupListeners(); 
-                        appContainer.classList.remove('hidden');
-                        loginContainer.classList.add('hidden');
-                        authLoader.classList.add('hidden');
-                        viewLoader.classList.remove('hidden');
-                    }
-                } else {
-                    appContainer.classList.add('hidden');
-                    loginContainer.classList.remove('hidden');
+                const userDocRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(userDocRef);
+                if (docSnap.exists()) {
+                    currentUserData = { id: user.uid, ...docSnap.data() };
+                    currentUser = user;
+                    setupListeners();
+                    appContainer.classList.remove('hidden');
+                    loginContainer.classList.add('hidden');
                     authLoader.classList.add('hidden');
-                    viewLoader.classList.add('hidden');
-                    loginBox.classList.remove('hidden');
-                    currentUser = null;
-                    currentUserData = null;
+                } else {
+                    if (!isRegistering) {
+                        await signOut(auth);
+                        showToast("Could not find user profile.", true);
+                    }
                 }
             } catch (error) {
-                console.error("Authentication state error:", error);
-                showToast("An error occurred during authentication. Please try again.", true);
+                console.error("Handle auth user error:", error);
+                showToast("An error occurred. Please try again.", true);
                 signOut(auth);
             }
-        });
-        
-        googleLoginBtn.addEventListener('click', async () => {
-            authLoader.classList.remove('hidden');
-            loginBox.classList.add('hidden');
-            loginError.classList.add('hidden');
-            
-            const provider = new GoogleAuthProvider();
-            try {
-                await signInWithPopup(auth, provider);
-                // onAuthStateChanged will handle the rest
-            } catch (error) {
-                loginError.textContent = error.message;
-                loginError.classList.remove('hidden');
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                await handleAuthUser(user);
+            } else {
+                appContainer.classList.add('hidden');
+                loginContainer.classList.remove('hidden');
                 authLoader.classList.add('hidden');
-                loginBox.classList.remove('hidden');
+                viewLoader.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                currentUser = null;
+                currentUserData = null;
             }
         });
-        
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth);
+       
+        document.addEventListener('DOMContentLoaded', () => {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                authLoader.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+                loginError.classList.add('hidden');
+               
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } catch (error) {
+                    loginError.textContent = error.message;
+                    loginError.classList.remove('hidden');
+                    authLoader.classList.add('hidden');
+                    loginForm.classList.remove('hidden');
+                }
+            });
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                authLoader.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                registerError.classList.add('hidden');
+                isRegistering = true;
+                const name = document.getElementById('register-name').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+               
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+                   
+                    const newUser = {
+                        name: name,
+                        email: email,
+                        isAdmin: email.toLowerCase() === ADMIN_EMAIL,
+                    };
+                    await setDoc(doc(db, "users", user.uid), newUser);
+                    isRegistering = false;
+                    await handleAuthUser(user);
+                } catch(error) {
+                    isRegistering = false;
+                    registerError.textContent = error.message;
+                    registerError.classList.remove('hidden');
+                    authLoader.classList.add('hidden');
+                    registerForm.classList.remove('hidden');
+                }
+            });
+           
+            logoutBtn.addEventListener('click', () => {
+                signOut(auth);
+            });
+            showRegisterLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+            });
+            showLoginLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                registerForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+            });
         });
-        
-        // --- STARTUP ---
-        // Listeners and render calls are now triggered by onAuthStateChanged
-        
+       
+        // The rest of the script (render functions, calculations, etc.) remains unchanged.
         // ... (all other functions are here)
     </script>
 </body>
 </html>
-
