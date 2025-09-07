@@ -588,8 +588,11 @@
         const getMonthName = (monthNumber) => new Date(2025, monthNumber - 1, 1).toLocaleString('default', { month: 'long' });
         const getMonthShortName = (monthNumber) => new Date(2025, monthNumber - 1, 1).toLocaleString('default', { month: 'short' }).toUpperCase();
         
+        // The rest of the script is defined below, outside the DOMContentLoaded listener
+        
         // --- MAIN APP LOGIC ---
         function showView(viewName) {
+            if(!views) return;
             Object.values(views).forEach(view => view.classList.add('hidden'));
             viewLoader.classList.add('hidden');
             if (views[viewName]) {
@@ -604,6 +607,7 @@
         }
 
         function showToast(message, isError = false) {
+            if(!toastMessage) return; // Guard against early calls
             toastMessage.textContent = message;
             toast.className = `fixed bottom-5 right-5 text-white py-3 px-6 rounded-lg shadow-xl transition-opacity duration-300 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
             toast.classList.remove('hidden');
@@ -627,12 +631,60 @@
             renderMyLoans();
             renderAdminView();
             renderTransactions();
-            renderNotifications();
+            // renderNotifications();
             renderDepositPage();
             renderFutureValue();
             renderLoanRecon();
             renderPenalties();
         }
+        
+        // --- DATA LISTENERS ---
+        function setupListeners() {
+            unsubscribeListeners.forEach(unsub => unsub());
+            unsubscribeListeners = [];
+
+            const groupRef = doc(db, "groups", GROUP_ID);
+            const unsubGroup = onSnapshot(groupRef, (snap) => {
+                if (snap.exists()) {
+                    groupConfig = snap.data();
+                    renderDepositPage();
+                }
+            }, (error) => console.error("Group listener error:", error));
+            unsubscribeListeners.push(unsubGroup);
+
+            const usersQuery = query(collection(db, "groups", GROUP_ID, "members"));
+            const unsubUsers = onSnapshot(usersQuery, (snap) => {
+                allMembers = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderApp(); 
+            }, (error) => console.error("Members listener error:", error));
+            unsubscribeListeners.push(unsubUsers);
+            
+            const transQuery = query(collection(db, "groups", GROUP_ID, "transactions"));
+            const unsubTrans = onSnapshot(transQuery, (snap) => {
+                allTransactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderDashboard();
+                renderTransactions();
+                renderLoanRecon();
+                renderFutureValue();
+            }, (error) => console.error("Transactions listener error:", error));
+            unsubscribeListeners.push(unsubTrans);
+
+            const loansQuery = query(collection(db, "groups", GROUP_ID, "loans"));
+            const unsubLoans = onSnapshot(loansQuery, (snap) => {
+                allLoans = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderMyLoans();
+                renderAdminView();
+            }, (error) => console.error("Loans listener error:", error));
+            unsubscribeListeners.push(unsubLoans);
+
+            const penaltiesQuery = query(collection(db, "groups", GROUP_ID, "penalties"));
+            const unsubPenalties = onSnapshot(penaltiesQuery, (snap) => {
+                allPenalties = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderPenalties();
+            }, (error) => console.error("Penalties listener error:", error));
+            unsubscribeListeners.push(unsubPenalties);
+        }
+
 
         // --- AUTHENTICATION ---
         onAuthStateChanged(auth, async (user) => {
@@ -644,11 +696,11 @@
                     if (docSnap.exists()) {
                         currentUserData = { id: user.uid, ...docSnap.data() };
                         currentUser = user;
-                        setupListeners(); 
                         appContainer.classList.remove('hidden');
                         loginContainer.classList.add('hidden');
                         authLoader.classList.add('hidden');
                         viewLoader.classList.remove('hidden');
+                        setupListeners(); 
                     } else {
                         await signOut(auth);
                         showToast("Could not find user profile. Please register first.", true);
@@ -658,8 +710,8 @@
                     loginContainer.classList.remove('hidden');
                     authLoader.classList.add('hidden');
                     viewLoader.classList.add('hidden');
-                    loginForm.classList.remove('hidden');
-                    registerForm.classList.add('hidden');
+                    if (loginForm) loginForm.classList.remove('hidden');
+                    if (registerForm) registerForm.classList.add('hidden');
                     currentUser = null;
                     currentUserData = null;
                 }
@@ -785,6 +837,15 @@
                     };
 
                     await setDoc(doc(db, "users", user.uid), newUser);
+                    
+                    const newMember = {
+                        name: name,
+                        email: email,
+                        userId: user.uid,
+                    };
+                    await setDoc(doc(db, "groups", GROUP_ID, "members", user.uid), newMember);
+
+
                 } catch(error) {
                     registerError.textContent = error.message;
                     registerError.classList.remove('hidden');
@@ -808,56 +869,15 @@
                 registerForm.classList.add('hidden');
                 loginForm.classList.remove('hidden');
             });
+
+            Object.keys(navLinks).forEach(key => {
+                navLinks[key].addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showView(key);
+                });
+            });
         });
         
-        // --- DATA LISTENERS ---
-        function setupListeners() {
-            unsubscribeListeners.forEach(unsub => unsub());
-            unsubscribeListeners = [];
-
-            const groupRef = doc(db, "groups", GROUP_ID);
-            const unsubGroup = onSnapshot(groupRef, (snap) => {
-                if (snap.exists()) {
-                    groupConfig = snap.data();
-                    renderDepositPage();
-                }
-            });
-            unsubscribeListeners.push(unsubGroup);
-
-            const usersQuery = query(collection(db, "users"));
-            const unsubUsers = onSnapshot(usersQuery, (snap) => {
-                allMembers = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderApp(); 
-            });
-            unsubscribeListeners.push(unsubUsers);
-            
-            const transQuery = query(collection(db, "groups", GROUP_ID, "transactions"));
-            const unsubTrans = onSnapshot(transQuery, (snap) => {
-                allTransactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderDashboard();
-                renderTransactions();
-                renderLoanRecon();
-                renderFutureValue();
-            });
-            unsubscribeListeners.push(unsubTrans);
-
-            const loansQuery = query(collection(db, "groups", GROUP_ID, "loans"));
-            const unsubLoans = onSnapshot(loansQuery, (snap) => {
-                allLoans = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderMyLoans();
-                renderAdminView();
-            });
-            unsubscribeListeners.push(unsubLoans);
-
-            const penaltiesQuery = query(collection(db, "groups", GROUP_ID, "penalties"));
-            const unsubPenalties = onSnapshot(penaltiesQuery, (snap) => {
-                allPenalties = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderPenalties();
-            });
-            unsubscribeListeners.push(unsubPenalties);
-        }
-
-
         // The rest of the script (render functions, calculations, etc.) remains unchanged.
         // ... (all other functions are here)
     </script>
