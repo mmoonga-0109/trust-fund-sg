@@ -74,6 +74,7 @@
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
+
     <!-- Login Page -->
     <div id="login-container" class="flex items-center justify-center h-screen bg-gray-200">
         <div class="w-full max-w-md">
@@ -81,7 +82,7 @@
                 <div class="loader inline-block"></div>
                 <p class="mt-4 text-gray-600">Please wait...</p>
             </div>
-           
+            
             <!-- Login Form -->
             <form id="login-form" class="bg-white shadow-lg rounded-xl px-8 pt-6 pb-8 mb-4">
                 <div class="mb-8 text-center">
@@ -105,6 +106,7 @@
                     Don't have an account? <a href="#" id="show-register" class="font-medium text-indigo-600 hover:text-indigo-500">Create one</a>
                 </p>
             </form>
+
             <!-- Registration Form -->
             <form id="register-form" class="bg-white shadow-lg rounded-xl px-8 pt-6 pb-8 mb-4 hidden">
                  <div class="mb-8 text-center">
@@ -131,11 +133,14 @@
                     Already have an account? <a href="#" id="show-login" class="font-medium text-indigo-600 hover:text-indigo-500">Sign In</a>
                 </p>
             </form>
+
              <p class="text-center text-gray-500 text-xs">
                 &copy;2025 The Trust Fund. All rights reserved.
             </p>
         </div>
     </div>
+
+
     <!-- Main Application -->
     <div id="app-container" class="hidden">
         <div class="flex h-screen">
@@ -184,7 +189,7 @@
                     </a>
                 </nav>
             </aside>
-   
+    
             <!-- Main Content -->
             <main class="flex-1 flex flex-col">
                 <!-- Header -->
@@ -209,15 +214,16 @@
                         <button id="logout-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg text-sm">Logout</button>
                     </div>
                 </header>
-   
+    
                 <!-- Page Content -->
                 <div class="flex-1 p-6 overflow-y-auto">
-                   
+                    
                     <!-- Universal Loader -->
                     <div id="view-loader" class="text-center p-10">
                         <div class="loader inline-block"></div>
                         <p class="mt-4 text-gray-600">Loading Data...</p>
                     </div>
+
                     <!-- Dashboard View -->
                     <div id="view-dashboard" class="hidden">
                         <!-- Stat Cards -->
@@ -235,7 +241,7 @@
                                 <p id="my-savings" class="text-3xl font-bold text-gray-800">ZMW 0.00</p>
                             </div>
                         </div>
-   
+    
                          <!-- Liquidity and Chart Section -->
                         <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
                             <!-- Liquidity Table -->
@@ -270,7 +276,7 @@
                                  </div>
                             </div>
                         </div>
-   
+    
                         <!-- Members Overview Table -->
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <h3 class="text-xl font-semibold mb-4">Member Overview</h3>
@@ -286,7 +292,7 @@
                             </div>
                         </div>
                     </div>
-   
+    
                     <!-- Deposit View -->
                     <div id="view-deposit" class="hidden">
                         <!-- Admin Control Panel -->
@@ -335,6 +341,7 @@
                             </form>
                         </div>
                     </div>
+
                     <!-- Request Loan View -->
                     <div id="view-request-loan" class="hidden">
                         <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-md">
@@ -354,7 +361,7 @@
                             </form>
                         </div>
                     </div>
-   
+    
                     <!-- My Loans View -->
                     <div id="view-my-loans" class="hidden">
                          <div class="bg-white p-6 rounded-xl shadow-md">
@@ -375,7 +382,7 @@
                             </div>
                         </div>
                     </div>
-   
+    
                      <!-- Loan Recon View -->
                     <div id="view-recon" class="hidden">
                         <div class="bg-white p-6 rounded-xl shadow-md">
@@ -385,7 +392,7 @@
                             </div>
                         </div>
                     </div>
-   
+    
                     <!-- Future Value View -->
                     <div id="view-future" class="hidden">
                         <div class="bg-white p-6 rounded-xl shadow-md">
@@ -395,7 +402,7 @@
                             </div>
                         </div>
                     </div>
-   
+    
                     <!-- Penalties View -->
                     <div id="view-penalties" class="hidden">
                         <div id="penalty-admin-panel" class="hidden bg-indigo-50 p-6 rounded-xl shadow-md mb-6 border-l-4 border-indigo-500">
@@ -432,6 +439,7 @@
                                 </div>
                              </form>
                         </div>
+
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <h3 class="text-xl font-semibold mb-4">Monthly Penalties</h3>
                             <div id="penalties-container" class="overflow-x-auto">
@@ -439,8 +447,8 @@
                             </div>
                         </div>
                     </div>
-   
-   
+    
+    
                     <!-- Admin View -->
                     <div id="view-admin" class="hidden">
                          <div class="bg-white p-6 rounded-xl shadow-md">
@@ -462,7 +470,7 @@
                             </div>
                         </div>
                     </div>
-   
+    
                     <!-- Transactions View -->
                     <div id="view-transactions" class="hidden">
                         <div class="bg-white p-6 rounded-xl shadow-md mb-6">
@@ -493,16 +501,17 @@
                             </div>
                         </div>
                     </div>
-   
+    
                 </div>
             </main>
         </div>
     </div>
+
     <!-- Toast Notification -->
     <div id="toast" class="hidden fixed bottom-5 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-xl transition-opacity duration-300">
         <p id="toast-message"></p>
     </div>
-   
+    
     <!-- Rejection Reason Modal -->
     <div id="rejection-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
@@ -528,121 +537,57 @@
             </div>
         </div>
     </div>
+
+
     <script type="module">
         // --- Firebase SDK Imports ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
         import { getFirestore, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, Timestamp, writeBatch } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
         // --- Firebase Configuration ---
         const firebaseConfig = {
-          apiKey: "AIzaSyBESlm4cl0-J92_nR0YncThpqrSuSZhmEk",
-          authDomain: "the-trust-fund-app.firebaseapp.com",
-          projectId: "the-trust-fund-app",
-          storageBucket: "the-trust-fund-app.firebasestorage.app",
-          messagingSenderId: "810030208272",
-          appId: "1:810030208272:web:d87cede9eb9392f5d30195"
+            apiKey: "AIzaSyA-l4xXZUg-r2appZESJdLWfSfkJjUr9PY",
+            authDomain: "the-trust-fund-app-8ba10.firebaseapp.com",
+            projectId: "the-trust-fund-app-8ba10",
+            storageBucket: "the-trust-fund-app-8ba10.appspot.com",
+            messagingSenderId: "820543355895",
+            appId: "1:820543355895:web:63ebe5b945394ca50b0cf2",
+            measurementId: "G-CBF5V7EX7M"
         };
-       
+        
         // --- App Configuration ---
         const GROUP_ID = "main"; // You can change this if you run multiple groups
         const ADMIN_EMAIL = "markmoonga@gmail.com";
+
         // --- Firebase Initialization ---
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
         // --- STATE ---
         let currentUser = null;
         let currentUserData = null; // To hold user profile from Firestore
         let liquidityChart = null;
         let loanIdToReject = null;
+
         let allMembers = [];
         let allTransactions = [];
         let allLoans = [];
         let allPenalties = [];
         let groupConfig = { isDepositPeriodOpen: false, depositMonth: null };
-        let isRegistering = false;
-        // --- DOM ELEMENTS ---
-        const loginContainer = document.getElementById('login-container');
-        const authLoader = document.getElementById('auth-loader');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const appContainer = document.getElementById('app-container');
-        const loginError = document.getElementById('login-error');
-        const registerError = document.getElementById('register-error');
-        const logoutBtn = document.getElementById('logout-btn');
-        const viewLoader = document.getElementById('view-loader');
-        const showRegisterLink = document.getElementById('show-register');
-        const showLoginLink = document.getElementById('show-login');
-       
-        const views = {
-            dashboard: document.getElementById('view-dashboard'),
-            deposit: document.getElementById('view-deposit'),
-            requestLoan: document.getElementById('view-request-loan'),
-            myLoans: document.getElementById('view-my-loans'),
-            recon: document.getElementById('view-recon'),
-            future: document.getElementById('view-future'),
-            penalties: document.getElementById('view-penalties'),
-            admin: document.getElementById('view-admin'),
-            transactions: document.getElementById('view-transactions'),
-        };
-        const navLinks = {
-            dashboard: document.getElementById('nav-dashboard'),
-            deposit: document.getElementById('nav-deposit'),
-            requestLoan: document.getElementById('nav-request-loan'),
-            myLoans: document.getElementById('nav-my-loans'),
-            recon: document.getElementById('nav-recon'),
-            future: document.getElementById('nav-future'),
-            penalties: document.getElementById('nav-penalties'),
-            admin: document.getElementById('nav-admin'),
-            transactions: document.getElementById('nav-transactions'),
-        };
-        const headerTitle = document.getElementById('header-title');
-        const memberOverviewHead = document.getElementById('member-overview-head');
-        const memberOverviewBody = document.getElementById('member-overview-body');
-        const myLoansTable = document.getElementById('my-loans-table');
-        const adminApprovalTable = document.getElementById('admin-approval-table');
-        const transactionsSavingsHead = document.getElementById('transactions-savings-head');
-        const transactionsSavingsBody = document.getElementById('transactions-savings-body');
-        const transactionsRepaymentsHead = document.getElementById('transactions-repayments-head');
-        const transactionsRepaymentsBody = document.getElementById('transactions-repayments-body');
-        const transactionsBorrowedHead = document.getElementById('transactions-borrowed-head');
-        const transactionsBorrowedBody = document.getElementById('transactions-borrowed-body');
-        const loanRequestForm = document.getElementById('loan-request-form');
-        const userInfo = document.getElementById('user-info');
-        const notificationBell = document.getElementById('notification-bell');
-        const notificationPanel = document.getElementById('notification-panel');
-        const notificationList = document.getElementById('notification-list');
-        const notificationIndicator = document.getElementById('notification-indicator');
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toast-message');
-        const futureValueContainer = document.getElementById('future-value-container');
-        const reconStatementsContainer = document.getElementById('recon-statements-container');
-        const penaltiesContainer = document.getElementById('penalties-container');
-        const liquidityTableBody = document.getElementById('liquidity-table-body');
-       
-        // Modal Elements
-        const rejectionModal = document.getElementById('rejection-modal');
-        const submitRejectionBtn = document.getElementById('submit-rejection-btn');
-        const cancelRejectionBtn = document.getElementById('cancel-rejection-btn');
-        // Deposit Page Elements
-        const depositAdminPanel = document.getElementById('deposit-admin-panel');
-        const depositForm = document.getElementById('deposit-form');
-        const depositFieldset = document.getElementById('deposit-fieldset');
-        const depositStatusText = document.getElementById('deposit-status-text');
-        const depositPeriodMessage = document.getElementById('deposit-period-message');
-        const openDepositsBtn = document.getElementById('open-deposits-btn');
-        const closeDepositsBtn = document.getElementById('close-deposits-btn');
-        const depositMonthSelect = document.getElementById('deposit-month-select');
-        // Penalty Page Elements
-        const penaltyAdminPanel = document.getElementById('penalty-admin-panel');
-        const penaltyForm = document.getElementById('penalty-form');
-        const penaltyTotalDisplay = document.getElementById('penalty-total-display');
+        let nextManualReconId = 1;
+        let unsubscribeListeners = [];
+
+        // --- DOM ELEMENTS (will be assigned on DOMContentLoaded) ---
+        let loginContainer, authLoader, loginForm, registerForm, appContainer, loginError, registerError, logoutBtn, viewLoader, showRegisterLink, showLoginLink, views, navLinks, headerTitle, memberOverviewHead, memberOverviewBody, myLoansTable, adminApprovalTable, transactionsSavingsHead, transactionsSavingsBody, transactionsRepaymentsHead, transactionsRepaymentsBody, transactionsBorrowedHead, transactionsBorrowedBody, loanRequestForm, userInfo, notificationBell, notificationPanel, notificationList, notificationIndicator, toast, toastMessage, futureValueContainer, reconStatementsContainer, penaltiesContainer, liquidityTableBody, rejectionModal, submitRejectionBtn, cancelRejectionBtn, depositAdminPanel, depositForm, depositFieldset, depositStatusText, depositPeriodMessage, openDepositsBtn, closeDepositsBtn, depositMonthSelect, penaltyAdminPanel, penaltyForm, penaltyTotalDisplay;
+        
         // --- FORMATTERS ---
         const formatCurrency = (amount) => `ZMW ${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         const formatCurrencySimple = (amount) => (amount && amount != 0) ? amount.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}) : '-';
         const getMonthName = (monthNumber) => new Date(2025, monthNumber - 1, 1).toLocaleString('default', { month: 'long' });
         const getMonthShortName = (monthNumber) => new Date(2025, monthNumber - 1, 1).toLocaleString('default', { month: 'short' }).toUpperCase();
-       
+        
         // --- MAIN APP LOGIC ---
         function showView(viewName) {
             Object.values(views).forEach(view => view.classList.add('hidden'));
@@ -650,14 +595,14 @@
             if (views[viewName]) {
                 views[viewName].classList.remove('hidden');
             }
-           
+            
             Object.values(navLinks).forEach(link => link.classList.remove('active'));
             if(navLinks[viewName]) {
                 navLinks[viewName].classList.add('active');
                 headerTitle.textContent = navLinks[viewName].textContent.trim();
             }
         }
-       
+        
         function renderApp() {
             if (!currentUserData) return;
             userInfo.innerHTML = `
@@ -668,7 +613,7 @@
             navLinks.transactions.classList.toggle('hidden', !currentUserData.isAdmin);
             depositAdminPanel.classList.toggle('hidden', !currentUserData.isAdmin);
             penaltyAdminPanel.classList.toggle('hidden', !currentUserData.isAdmin);
-           
+            
             renderDashboard();
             renderMyLoans();
             renderAdminView();
@@ -679,55 +624,127 @@
             renderLoanRecon();
             renderPenalties();
         }
+
         // --- AUTHENTICATION ---
-        async function handleAuthUser(user) {
+        onAuthStateChanged(auth, async (user) => {
             try {
-                const userDocRef = doc(db, "users", user.uid);
-                const docSnap = await getDoc(userDocRef);
-                if (docSnap.exists()) {
-                    currentUserData = { id: user.uid, ...docSnap.data() };
-                    currentUser = user;
-                    setupListeners();
-                    appContainer.classList.remove('hidden');
-                    loginContainer.classList.add('hidden');
-                    authLoader.classList.add('hidden');
-                } else {
-                    if (!isRegistering) {
+                if (user) {
+                    const userDocRef = doc(db, "users", user.uid);
+                    const docSnap = await getDoc(userDocRef);
+
+                    if (docSnap.exists()) {
+                        currentUserData = { id: user.uid, ...docSnap.data() };
+                        currentUser = user;
+                        setupListeners(); 
+                        appContainer.classList.remove('hidden');
+                        loginContainer.classList.add('hidden');
+                        authLoader.classList.add('hidden');
+                        viewLoader.classList.remove('hidden');
+                    } else {
                         await signOut(auth);
-                        showToast("Could not find user profile.", true);
+                        showToast("Could not find user profile. Please register first.", true);
                     }
+                } else {
+                    appContainer.classList.add('hidden');
+                    loginContainer.classList.remove('hidden');
+                    authLoader.classList.add('hidden');
+                    viewLoader.classList.add('hidden');
+                    loginForm.classList.remove('hidden');
+                    registerForm.classList.add('hidden');
+                    currentUser = null;
+                    currentUserData = null;
                 }
             } catch (error) {
-                console.error("Handle auth user error:", error);
-                showToast("An error occurred. Please try again.", true);
-                signOut(auth);
-            }
-        }
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                await handleAuthUser(user);
-            } else {
-                appContainer.classList.add('hidden');
-                loginContainer.classList.remove('hidden');
-                authLoader.classList.add('hidden');
-                viewLoader.classList.add('hidden');
-                loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-                currentUser = null;
-                currentUserData = null;
+                console.error("Authentication state error:", error);
+                showToast("An error occurred during authentication. Please try again.", true);
+                if(auth.currentUser) await signOut(auth);
             }
         });
-       
+        
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Assign DOM Elements ---
+            loginContainer = document.getElementById('login-container');
+            authLoader = document.getElementById('auth-loader');
+            loginForm = document.getElementById('login-form');
+            registerForm = document.getElementById('register-form');
+            appContainer = document.getElementById('app-container');
+            loginError = document.getElementById('login-error');
+            registerError = document.getElementById('register-error');
+            logoutBtn = document.getElementById('logout-btn');
+            viewLoader = document.getElementById('view-loader');
+            showRegisterLink = document.getElementById('show-register');
+            showLoginLink = document.getElementById('show-login');
+            
+            views = {
+                dashboard: document.getElementById('view-dashboard'),
+                deposit: document.getElementById('view-deposit'),
+                requestLoan: document.getElementById('view-request-loan'),
+                myLoans: document.getElementById('view-my-loans'),
+                recon: document.getElementById('view-recon'),
+                future: document.getElementById('view-future'),
+                penalties: document.getElementById('view-penalties'),
+                admin: document.getElementById('view-admin'),
+                transactions: document.getElementById('view-transactions'),
+            };
+            navLinks = {
+                dashboard: document.getElementById('nav-dashboard'),
+                deposit: document.getElementById('nav-deposit'),
+                requestLoan: document.getElementById('nav-request-loan'),
+                myLoans: document.getElementById('nav-my-loans'),
+                recon: document.getElementById('nav-recon'),
+                future: document.getElementById('nav-future'),
+                penalties: document.getElementById('nav-penalties'),
+                admin: document.getElementById('nav-admin'),
+                transactions: document.getElementById('nav-transactions'),
+            };
+            headerTitle = document.getElementById('header-title');
+            memberOverviewHead = document.getElementById('member-overview-head');
+            memberOverviewBody = document.getElementById('member-overview-body');
+            myLoansTable = document.getElementById('my-loans-table');
+            adminApprovalTable = document.getElementById('admin-approval-table');
+            transactionsSavingsHead = document.getElementById('transactions-savings-head');
+            transactionsSavingsBody = document.getElementById('transactions-savings-body');
+            transactionsRepaymentsHead = document.getElementById('transactions-repayments-head');
+            transactionsRepaymentsBody = document.getElementById('transactions-repayments-body');
+            transactionsBorrowedHead = document.getElementById('transactions-borrowed-head');
+            transactionsBorrowedBody = document.getElementById('transactions-borrowed-body');
+            loanRequestForm = document.getElementById('loan-request-form');
+            userInfo = document.getElementById('user-info');
+            notificationBell = document.getElementById('notification-bell');
+            notificationPanel = document.getElementById('notification-panel');
+            notificationList = document.getElementById('notification-list');
+            notificationIndicator = document.getElementById('notification-indicator');
+            toast = document.getElementById('toast');
+            toastMessage = document.getElementById('toast-message');
+            futureValueContainer = document.getElementById('future-value-container');
+            reconStatementsContainer = document.getElementById('recon-statements-container');
+            penaltiesContainer = document.getElementById('penalties-container');
+            liquidityTableBody = document.getElementById('liquidity-table-body');
+            rejectionModal = document.getElementById('rejection-modal');
+            submitRejectionBtn = document.getElementById('submit-rejection-btn');
+            cancelRejectionBtn = document.getElementById('cancel-rejection-btn');
+            depositAdminPanel = document.getElementById('deposit-admin-panel');
+            depositForm = document.getElementById('deposit-form');
+            depositFieldset = document.getElementById('deposit-fieldset');
+            depositStatusText = document.getElementById('deposit-status-text');
+            depositPeriodMessage = document.getElementById('deposit-period-message');
+            openDepositsBtn = document.getElementById('open-deposits-btn');
+            closeDepositsBtn = document.getElementById('close-deposits-btn');
+            depositMonthSelect = document.getElementById('deposit-month-select');
+            penaltyAdminPanel = document.getElementById('penalty-admin-panel');
+            penaltyForm = document.getElementById('penalty-form');
+            penaltyTotalDisplay = document.getElementById('penalty-total-display');
+
+            // --- Attach Event Listeners ---
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 authLoader.classList.remove('hidden');
                 loginForm.classList.add('hidden');
                 loginError.classList.add('hidden');
-               
+                
                 const email = document.getElementById('login-email').value;
                 const password = document.getElementById('login-password').value;
+
                 try {
                     await signInWithEmailAndPassword(auth, email, password);
                 } catch (error) {
@@ -737,54 +754,56 @@
                     loginForm.classList.remove('hidden');
                 }
             });
+
             registerForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 authLoader.classList.remove('hidden');
                 registerForm.classList.add('hidden');
                 registerError.classList.add('hidden');
-                isRegistering = true;
+
                 const name = document.getElementById('register-name').value;
                 const email = document.getElementById('register-email').value;
                 const password = document.getElementById('register-password').value;
-               
+                
                 try {
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
-                   
+                    
                     const newUser = {
                         name: name,
                         email: email,
                         isAdmin: email.toLowerCase() === ADMIN_EMAIL,
                     };
+
                     await setDoc(doc(db, "users", user.uid), newUser);
-                    isRegistering = false;
-                    await handleAuthUser(user);
                 } catch(error) {
-                    isRegistering = false;
                     registerError.textContent = error.message;
                     registerError.classList.remove('hidden');
                     authLoader.classList.add('hidden');
                     registerForm.classList.remove('hidden');
                 }
             });
-           
+            
             logoutBtn.addEventListener('click', () => {
                 signOut(auth);
             });
+
             showRegisterLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 loginForm.classList.add('hidden');
                 registerForm.classList.remove('hidden');
             });
+
             showLoginLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 registerForm.classList.add('hidden');
                 loginForm.classList.remove('hidden');
             });
         });
-       
+        
         // The rest of the script (render functions, calculations, etc.) remains unchanged.
         // ... (all other functions are here)
     </script>
 </body>
 </html>
+
