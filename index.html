@@ -71,6 +71,19 @@
             visibility: visible;
             opacity: 1;
         }
+        .status-present { background-color: #dcfce7; color: #166534; }
+        .status-absent { background-color: #fee2e2; color: #991b1b; }
+        .status-late { background-color: #fef3c7; color: #92400e; }
+        .status-none { background-color: #f3f4f6; color: #6b7280; }
+        .attendance-cell {
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            width: 60px; /* fixed width for cells */
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -157,7 +170,7 @@
                     </a>
                      <a href="#" id="nav-deposit" class="sidebar-link flex items-center p-3 rounded-lg">
                         <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm-5-12v-2m0 4h.01"></path></svg>
-                        Deposit
+                        Declaration
                     </a>
                     <a href="#" id="nav-request-loan" class="sidebar-link flex items-center p-3 rounded-lg">
                         <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -228,15 +241,15 @@
                     <div id="view-dashboard" class="hidden">
                         <!-- Stat Cards -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                            <div class="bg-white p-6 rounded-xl shadow-md">
+                            <div class="bg-white p-6 rounded-xl shadow-md text-center">
                                 <h3 class="text-gray-500 font-medium">Total Group Savings</h3>
                                 <p id="group-savings-stat" class="text-3xl font-bold text-indigo-600">ZMW 0.00</p>
                             </div>
-                            <div class="bg-white p-6 rounded-xl shadow-md">
+                            <div class="bg-white p-6 rounded-xl shadow-md text-center">
                                 <h3 class="text-gray-500 font-medium">Funds Available for Loans</h3>
                                 <p id="group-liquidity-stat" class="text-3xl font-bold text-green-600">ZMW 0.00</p>
                             </div>
-                            <div class="bg-white p-6 rounded-xl shadow-md">
+                            <div class="bg-white p-6 rounded-xl shadow-md text-center">
                                 <h3 class="text-gray-500 font-medium">My Total Savings</h3>
                                 <p id="my-savings" class="text-3xl font-bold text-gray-800">ZMW 0.00</p>
                             </div>
@@ -245,7 +258,7 @@
                          <!-- Liquidity and Chart Section -->
                         <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
                             <!-- Liquidity Table -->
-                            <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-md">
+                            <div class="lg:col-span-5 bg-white p-6 rounded-xl shadow-md">
                                 <h3 class="text-xl font-semibold mb-4">Group Liquidity (Monthly)</h3>
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-left text-sm">
@@ -260,6 +273,10 @@
                                                 <th class="p-2 font-medium text-gray-600 text-right">JUN</th>
                                                 <th class="p-2 font-medium text-gray-600 text-right">JUL</th>
                                                 <th class="p-2 font-medium text-gray-600 text-right">AUG</th>
+                                                <th class="p-2 font-medium text-gray-600 text-right">SEP</th>
+                                                <th class="p-2 font-medium text-gray-600 text-right">OCT</th>
+                                                <th class="p-2 font-medium text-gray-600 text-right">NOV</th>
+                                                <th class="p-2 font-medium text-gray-600 text-right">DEC</th>
                                             </tr>
                                         </thead>
                                         <tbody id="liquidity-table-body" class="divide-y divide-gray-200">
@@ -267,13 +284,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
-                            <!-- Fund Distribution Chart -->
-                            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md flex flex-col justify-center items-center">
-                                 <h3 class="text-xl font-semibold mb-4 text-center">Fund Distribution</h3>
-                                 <div class="w-full max-w-xs mx-auto">
-                                    <canvas id="liquidity-chart"></canvas>
-                                 </div>
                             </div>
                         </div>
     
@@ -291,13 +301,28 @@
                                 </table>
                             </div>
                         </div>
+
+                        <!-- Attendance Table -->
+                        <div id="attendance-section" class="hidden bg-white p-6 rounded-xl shadow-md mt-6">
+                            <h3 class="text-xl font-semibold mb-4">Member Attendance</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-sm">
+                                    <thead id="attendance-head" class="bg-gray-50">
+                                        <!-- Header generated by JS -->
+                                    </thead>
+                                    <tbody id="attendance-body">
+                                        <!-- Data will be dynamically inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
     
                     <!-- Deposit View -->
                     <div id="view-deposit" class="hidden">
                         <!-- Admin Control Panel -->
                         <div id="deposit-admin-panel" class="hidden bg-indigo-50 p-6 rounded-xl shadow-md mb-6 border-l-4 border-indigo-500">
-                             <h2 class="text-2xl font-bold mb-4 text-gray-800">Deposit Period Control</h2>
+                             <h2 class="text-2xl font-bold mb-4 text-gray-800">Declaration Period Control</h2>
                              <div class="flex items-center space-x-4">
                                 <select id="deposit-month-select" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                                     <option selected>Choose a month...</option>
@@ -334,7 +359,7 @@
                                             <input type="number" id="borrow-amount" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="0.00">
                                         </div>
                                     </div>
-                                    <button type="submit" class="mt-8 w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                    <button id="submit-declaration-btn" type="submit" class="mt-8 w-full bg-gray-400 text-white font-bold py-3 px-4 rounded-lg transition-colors cursor-not-allowed" disabled>
                                         Submit My Declaration
                                     </button>
                                 </fieldset>
@@ -543,14 +568,14 @@
         // --- Firebase SDK Imports ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-        import { getFirestore, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, Timestamp, writeBatch } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, Timestamp, writeBatch, deleteField } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
         // --- Firebase Configuration ---
         const firebaseConfig = {
             apiKey: "AIzaSyA-l4xXZUg-r2appZESJdLWfSfkJjUr9PY",
             authDomain: "the-trust-fund-app-8ba10.firebaseapp.com",
             projectId: "the-trust-fund-app-8ba10",
-            storageBucket: "the-trust-fund-app-8ba10.appspot.com",
+            storageBucket: "the-trust-fund-app-8ba10.firebasestorage.app",
             messagingSenderId: "820543355895",
             appId: "1:820543355895:web:63ebe5b945394ca50b0cf2",
             measurementId: "G-CBF5V7EX7M"
@@ -558,7 +583,7 @@
         
         // --- App Configuration ---
         const GROUP_ID = "main"; // You can change this if you run multiple groups
-        const ADMIN_EMAIL = "markmoonga@gmail.com";
+        const ADMIN_EMAIL = "markmoonga@gmail.com"; 
 
         // --- Firebase Initialization ---
         const app = initializeApp(firebaseConfig);
@@ -570,25 +595,25 @@
         let currentUserData = null; // To hold user profile from Firestore
         let liquidityChart = null;
         let loanIdToReject = null;
+        let isInitialLoad = true;
 
         let allMembers = [];
         let allTransactions = [];
         let allLoans = [];
         let allPenalties = [];
+        let allAttendance = [];
         let groupConfig = { isDepositPeriodOpen: false, depositMonth: null };
-        let nextManualReconId = 1;
+        
         let unsubscribeListeners = [];
-
+        
         // --- DOM ELEMENTS (will be assigned on DOMContentLoaded) ---
-        let loginContainer, authLoader, loginForm, registerForm, appContainer, loginError, registerError, logoutBtn, viewLoader, showRegisterLink, showLoginLink, views, navLinks, headerTitle, memberOverviewHead, memberOverviewBody, myLoansTable, adminApprovalTable, transactionsSavingsHead, transactionsSavingsBody, transactionsRepaymentsHead, transactionsRepaymentsBody, transactionsBorrowedHead, transactionsBorrowedBody, loanRequestForm, userInfo, notificationBell, notificationPanel, notificationList, notificationIndicator, toast, toastMessage, futureValueContainer, reconStatementsContainer, penaltiesContainer, liquidityTableBody, rejectionModal, submitRejectionBtn, cancelRejectionBtn, depositAdminPanel, depositForm, depositFieldset, depositStatusText, depositPeriodMessage, openDepositsBtn, closeDepositsBtn, depositMonthSelect, penaltyAdminPanel, penaltyForm, penaltyTotalDisplay;
+        let loginContainer, authLoader, loginForm, registerForm, appContainer, loginError, registerError, logoutBtn, viewLoader, showRegisterLink, showLoginLink, views, navLinks, headerTitle, memberOverviewHead, memberOverviewBody, myLoansTable, adminApprovalTable, transactionsSavingsHead, transactionsSavingsBody, transactionsRepaymentsHead, transactionsRepaymentsBody, transactionsBorrowedHead, transactionsBorrowedBody, loanRequestForm, userInfo, notificationBell, notificationPanel, notificationList, notificationIndicator, toast, toastMessage, futureValueContainer, reconStatementsContainer, penaltiesContainer, liquidityTableBody, rejectionModal, submitRejectionBtn, cancelRejectionBtn, depositAdminPanel, depositForm, depositFieldset, depositStatusText, depositPeriodMessage, openDepositsBtn, closeDepositsBtn, depositMonthSelect, penaltyAdminPanel, penaltyForm, penaltyTotalDisplay, attendanceSection, attendanceHead, attendanceBody, submitDeclarationBtn, saveAmountInput, repayAmountInput, borrowAmountInput;
         
         // --- FORMATTERS ---
         const formatCurrency = (amount) => `ZMW ${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         const formatCurrencySimple = (amount) => (amount && amount != 0) ? amount.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}) : '-';
         const getMonthName = (monthNumber) => new Date(2025, monthNumber - 1, 1).toLocaleString('default', { month: 'long' });
         const getMonthShortName = (monthNumber) => new Date(2025, monthNumber - 1, 1).toLocaleString('default', { month: 'short' }).toUpperCase();
-        
-        // The rest of the script is defined below, outside the DOMContentLoaded listener
         
         // --- MAIN APP LOGIC ---
         function showView(viewName) {
@@ -627,15 +652,21 @@
             depositAdminPanel.classList.toggle('hidden', !currentUserData.isAdmin);
             penaltyAdminPanel.classList.toggle('hidden', !currentUserData.isAdmin);
             
+            // Update max loan amount text on loan request form
+            const memberStats = calculateAllMemberStats().find(m => m.id === currentUserData.id);
+            const myTotalSavings = memberStats ? memberStats.totalSavings : 0;
+            const maxLoanAmount = myTotalSavings * 3; // Assuming 3x savings rule
+            document.getElementById('max-loan-text').textContent = `Your current savings allow for a maximum loan of ${formatCurrency(maxLoanAmount)}`;
+
             renderDashboard();
             renderMyLoans();
             renderAdminView();
             renderTransactions();
-            // renderNotifications();
             renderDepositPage();
             renderFutureValue();
             renderLoanRecon();
             renderPenalties();
+            renderAttendanceTable();
         }
         
         // --- DATA LISTENERS ---
@@ -655,6 +686,10 @@
             const usersQuery = query(collection(db, "groups", GROUP_ID, "members"));
             const unsubUsers = onSnapshot(usersQuery, (snap) => {
                 allMembers = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                 if (isInitialLoad && allMembers.length > 0) {
+                    showView('dashboard');
+                    isInitialLoad = false;
+                }
                 renderApp(); 
             }, (error) => console.error("Members listener error:", error));
             unsubscribeListeners.push(unsubUsers);
@@ -683,6 +718,13 @@
                 renderPenalties();
             }, (error) => console.error("Penalties listener error:", error));
             unsubscribeListeners.push(unsubPenalties);
+
+            const attendanceQuery = query(collection(db, "groups", GROUP_ID, "attendance"));
+            const unsubAttendance = onSnapshot(attendanceQuery, (snap) => {
+                allAttendance = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderAttendanceTable();
+            }, (error) => console.error("Attendance listener error:", error));
+            unsubscribeListeners.push(unsubAttendance);
         }
 
 
@@ -690,6 +732,7 @@
         onAuthStateChanged(auth, async (user) => {
             try {
                 if (user) {
+                    viewLoader.classList.remove('hidden'); // Show loader while we check user data
                     const userDocRef = doc(db, "users", user.uid);
                     const docSnap = await getDoc(userDocRef);
 
@@ -699,7 +742,6 @@
                         appContainer.classList.remove('hidden');
                         loginContainer.classList.add('hidden');
                         authLoader.classList.add('hidden');
-                        viewLoader.classList.remove('hidden');
                         setupListeners(); 
                     } else {
                         await signOut(auth);
@@ -795,6 +837,13 @@
             penaltyAdminPanel = document.getElementById('penalty-admin-panel');
             penaltyForm = document.getElementById('penalty-form');
             penaltyTotalDisplay = document.getElementById('penalty-total-display');
+            attendanceSection = document.getElementById('attendance-section');
+            attendanceHead = document.getElementById('attendance-head');
+            attendanceBody = document.getElementById('attendance-body');
+            submitDeclarationBtn = document.getElementById('submit-declaration-btn');
+            saveAmountInput = document.getElementById('save-amount');
+            repayAmountInput = document.getElementById('repay-amount');
+            borrowAmountInput = document.getElementById('borrow-amount');
 
             // --- Attach Event Listeners ---
             loginForm.addEventListener('submit', async (e) => {
@@ -855,6 +904,9 @@
             });
             
             logoutBtn.addEventListener('click', () => {
+                isInitialLoad = true; // Reset on logout
+                unsubscribeListeners.forEach(unsub => unsub()); // Detach listeners
+                unsubscribeListeners = [];
                 signOut(auth);
             });
 
@@ -876,11 +928,768 @@
                     showView(key);
                 });
             });
+
+            // --- Added Event Listeners for Forms and Buttons ---
+            openDepositsBtn.addEventListener('click', handleOpenDeposits);
+            closeDepositsBtn.addEventListener('click', handleCloseDeposits);
+            depositForm.addEventListener('submit', handleSubmitDeclaration);
+            loanRequestForm.addEventListener('submit', handleSubmitLoanRequest);
+            submitRejectionBtn.addEventListener('click', handleSubmitRejection);
+            cancelRejectionBtn.addEventListener('click', () => {
+                rejectionModal.classList.add('hidden');
+                document.getElementById('rejection-error').classList.add('hidden');
+                loanIdToReject = null;
+            });
+            penaltyForm.addEventListener('submit', handleAddPenalty);
+            document.querySelectorAll('input[name="penalty-reason"]').forEach(cb => {
+                cb.addEventListener('change', updateTotalPenalty);
+            });
+
+            attendanceBody.addEventListener('click', handleAttendanceClick);
+
+            // --- Declaration form validation ---
+            const inputsToValidate = [saveAmountInput, repayAmountInput, borrowAmountInput];
+            inputsToValidate.forEach(input => {
+                if(input) input.addEventListener('input', validateDeclarationForm);
+            });
+            validateDeclarationForm(); // Initial check
+
         });
         
-        // The rest of the script (render functions, calculations, etc.) remains unchanged.
-        // ... (all other functions are here)
+        // --- RENDER FUNCTIONS AND OTHER LOGIC ---
+        
+        // --- Declaration Form Validation ---
+        function validateDeclarationForm() {
+            if (!submitDeclarationBtn || !saveAmountInput || !repayAmountInput || !borrowAmountInput) return;
+            
+            // A value of '0' is valid, but an empty string is not.
+            const isSaveValid = saveAmountInput.value.trim() !== '';
+            const isRepayValid = repayAmountInput.value.trim() !== '';
+            const isBorrowValid = borrowAmountInput.value.trim() !== '';
+
+            if (isSaveValid && isRepayValid && isBorrowValid) {
+                submitDeclarationBtn.disabled = false;
+                submitDeclarationBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                submitDeclarationBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            } else {
+                submitDeclarationBtn.disabled = true;
+                submitDeclarationBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                submitDeclarationBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+            }
+        };
+
+        // --- Dashboard Rendering ---
+        function renderDashboard() {
+            if (!allMembers.length || !currentUserData) {
+                return;
+            }
+
+            const memberData = calculateAllMemberStats();
+            
+            // Calculate overall group stats
+            const totalGroupSavings = memberData.reduce((sum, member) => sum + member.totalSavings, 0);
+            const totalLoansOut = memberData.reduce((sum, member) => sum + member.loanBalance, 0);
+            const availableLiquidity = totalGroupSavings - totalLoansOut;
+            const mySavings = memberData.find(m => m.id === currentUserData.id)?.totalSavings || 0;
+
+            // Update stat cards
+            document.getElementById('group-savings-stat').textContent = formatCurrency(totalGroupSavings);
+            document.getElementById('group-liquidity-stat').textContent = formatCurrency(availableLiquidity);
+            document.getElementById('my-savings').textContent = formatCurrency(mySavings);
+
+            // Update Member Overview Table
+            renderMemberOverviewTable(memberData);
+            
+            // Update Liquidity Table
+            renderLiquiditySection();
+        }
+
+        function renderMemberOverviewTable(memberData) {
+            // Header for Member Overview
+            let headHTML = `
+                <tr>
+                    <th class="p-3 font-medium text-gray-600 text-center">NAME</th>
+                    <th class="p-3 font-medium text-gray-600 text-center">SAVED</th>
+                    <th class="p-3 font-medium text-gray-600 text-center">EARNED</th>
+                    <th class="p-3 font-medium text-gray-600 text-center">MAX LEVERAGE (2.5x)</th>
+                    <th class="p-3 font-medium text-gray-600 text-center">LOAN BALANCE</th>
+                    <th class="p-3 font-medium text-gray-600 text-center">AVAILABLE LEVERAGE</th>
+                    <th class="p-3 font-medium text-gray-600 text-center">PENALTIES</th>
+                    <th class="p-3 font-medium text-gray-600 text-center">ELIGIBLE TO BORROW</th>
+                    <th class="p-3 font-medium text-gray-600 text-center">NET EARNINGS</th>
+                </tr>`;
+            memberOverviewHead.innerHTML = headHTML;
+
+            // Body for Member Overview
+            let bodyHTML = '';
+            const sortedMemberData = [...memberData].sort((a, b) => a.name.localeCompare(b.name));
+
+            sortedMemberData.forEach(data => {
+                if (!data) return;
+                
+                const eligibilityIcon = data.isEligibleToBorrow
+                    ? `<svg class="w-6 h-6 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                    : `<svg class="w-6 h-6 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+
+                bodyHTML += `<tr class="border-b">`;
+                bodyHTML += `<td class="p-3 font-medium ${data.id === currentUserData.id ? 'text-indigo-600' : ''}">${data.name}</td>`;
+                bodyHTML += `<td class="p-3 text-right tabular-nums">${formatCurrencySimple(data.totalSavings)}</td>`;
+                bodyHTML += `<td class="p-3 text-right tabular-nums">${formatCurrencySimple(data.earned)}</td>`;
+                bodyHTML += `<td class="p-3 text-right tabular-nums">${formatCurrencySimple(data.maxLeverage)}</td>`;
+                bodyHTML += `<td class="p-3 text-right tabular-nums">${formatCurrencySimple(data.loanBalance)}</td>`;
+                bodyHTML += `<td class="p-3 text-right tabular-nums">${formatCurrencySimple(data.availableLeverage)}</td>`;
+                bodyHTML += `<td class="p-3 text-right tabular-nums">${formatCurrencySimple(data.totalPenalties)}</td>`;
+                bodyHTML += `<td class="p-3 text-center">${eligibilityIcon}</td>`;
+                bodyHTML += `<td class="p-3 text-right tabular-nums">${formatCurrencySimple(data.netEarnings)}</td>`;
+                bodyHTML += `</tr>`;
+            });
+            memberOverviewBody.innerHTML = bodyHTML;
+        }
+
+        function renderLiquiditySection() {
+            const monthlyData = calculateMonthlyLiquidity();
+
+            // Update Liquidity Table
+            let tableBodyHtml = '';
+            const rows = ['Balance b/f', 'Saved', 'Repaid', 'Avl For Borrowing', 'Borrowed', 'Balance c/f'];
+            rows.forEach(row => {
+                tableBodyHtml += `<tr class="border-b"><td class="p-2 font-medium">${row}</td>`;
+                for (let i = 1; i <= 12; i++) { 
+                    let value = 0;
+                    switch (row) {
+                        case 'Balance b/f': value = monthlyData[i].balanceBf; break;
+                        case 'Saved': value = monthlyData[i].savings; break;
+                        case 'Repaid': value = monthlyData[i].repayments; break;
+                        case 'Avl For Borrowing': value = monthlyData[i].totalIn; break;
+                        case 'Borrowed': value = monthlyData[i].loansOut; break;
+                        case 'Balance c/f': value = monthlyData[i].liquidity; break;
+                    }
+                    tableBodyHtml += `<td class="p-2 text-right tabular-nums">${formatCurrencySimple(value)}</td>`;
+                }
+                tableBodyHtml += `</tr>`;
+            });
+            liquidityTableBody.innerHTML = tableBodyHtml;
+
+            // Destroy the old chart if it exists, but don't create a new one.
+            if (liquidityChart) {
+                liquidityChart.destroy();
+                liquidityChart = null;
+            }
+        }
+        
+        // --- Attendance Table Rendering ---
+        function renderAttendanceTable() {
+            if (!currentUserData || !allMembers.length) return;
+
+            // Show to everyone, but editing is handled by handleAttendanceClick admin check
+            attendanceSection.classList.remove('hidden');
+
+            // 1. Render Header
+            let headHTML = '<tr><th class="p-2 font-medium text-gray-600">Member</th>';
+            for (let i = 1; i <= 12; i++) {
+                headHTML += `<th class="p-2 font-medium text-gray-600 text-center">${getMonthShortName(i)}</th>`;
+            }
+            headHTML += '</tr>';
+            attendanceHead.innerHTML = headHTML;
+
+            // 2. Render Body
+            let bodyHTML = '';
+            const sortedMembers = [...allMembers].sort((a, b) => a.name.localeCompare(b.name));
+            
+            sortedMembers.forEach(member => {
+                const memberAttendance = allAttendance.find(a => a.id === member.id) || {};
+                bodyHTML += `<tr class="border-b">`;
+                bodyHTML += `<td class="p-2 font-medium">${member.name}</td>`;
+                for (let i = 1; i <= 12; i++) {
+                    const status = memberAttendance[i] || 'none'; // 'none' for default styling
+                    let symbol = '';
+                    switch(status) {
+                        case 'present': symbol = 'P'; break;
+                        case 'absent': symbol = 'A'; break;
+                        case 'late': symbol = 'L'; break;
+                        default: symbol = '-';
+                    }
+                    bodyHTML += `<td class="attendance-cell status-${status}" data-user-id="${member.id}" data-month="${i}" data-status="${status}">${symbol}</td>`;
+                }
+                bodyHTML += `</tr>`;
+            });
+            attendanceBody.innerHTML = bodyHTML;
+        }
+
+        // --- My Loans Rendering ---
+        function renderMyLoans() {
+            if (!currentUserData || !allLoans) return;
+
+            const myLoans = allLoans.filter(loan => loan.userId === currentUserData.id)
+                                    .sort((a,b) => b.requestDate.seconds - a.requestDate.seconds);
+            
+            if (myLoans.length === 0) {
+                myLoansTable.innerHTML = `<tr><td colspan="3" class="text-center p-4">You have not requested any loans.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            myLoans.forEach(loan => {
+                const date = loan.requestDate.toDate().toLocaleDateString();
+                let statusBadge = '';
+                switch (loan.status) {
+                    case 'approved': statusBadge = '<span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Approved</span>'; break;
+                    case 'pending': statusBadge = '<span class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Pending</span>'; break;
+                    case 'rejected': statusBadge = `<span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Rejected</span> <span class="text-xs text-gray-500">(${loan.rejectionReason || 'No reason given'})</span>`; break;
+                }
+                html += `
+                    <tr class="border-b">
+                        <td class="p-3">${date}</td>
+                        <td class="p-3">${formatCurrency(loan.amount)}</td>
+                        <td class="p-3">${statusBadge}</td>
+                    </tr>
+                `;
+            });
+            myLoansTable.innerHTML = html;
+        }
+
+        // --- Admin View Rendering ---
+        function renderAdminView() {
+            if (!currentUserData || !currentUserData.isAdmin || !allLoans || !allMembers) return;
+
+            const pendingLoans = allLoans.filter(loan => loan.status === 'pending')
+                                         .sort((a,b) => a.requestDate.seconds - b.requestDate.seconds);
+
+            if (pendingLoans.length === 0) {
+                adminApprovalTable.innerHTML = `<tr><td colspan="4" class="text-center p-4">No pending loan approvals.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            pendingLoans.forEach(loan => {
+                const member = allMembers.find(m => m.userId === loan.userId);
+                const date = loan.requestDate.toDate().toLocaleDateString();
+                html += `
+                    <tr class="border-b" data-loan-id="${loan.id}">
+                        <td class="p-3">${member ? member.name : 'Unknown Member'}</td>
+                        <td class="p-3">${formatCurrency(loan.amount)}</td>
+                        <td class="p-3">${date}</td>
+                        <td class="p-3 text-center">
+                            <button class="approve-loan-btn bg-green-500 text-white px-3 py-1 rounded-md text-sm hover:bg-green-600">Approve</button>
+                            <button class="reject-loan-btn bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600 ml-2">Reject</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            adminApprovalTable.innerHTML = html;
+
+            // Add event listeners after rendering
+            document.querySelectorAll('.approve-loan-btn').forEach(btn => {
+                btn.addEventListener('click', handleApproveLoan);
+            });
+            document.querySelectorAll('.reject-loan-btn').forEach(btn => {
+                btn.addEventListener('click', handleRejectLoan);
+            });
+        }
+        
+        // --- Transactions Page Rendering (Admin Editable) ---
+        function renderTransactions() {
+            if (!currentUserData || !allMembers.length) return;
+
+            const renderTable = (type, headElement, bodyElement) => {
+                // Header
+                let headHTML = '<tr><th class="p-2 font-medium text-gray-600">Member</th>';
+                for (let i = 1; i <= 12; i++) {
+                    headHTML += `<th class="p-2 font-medium text-gray-600 text-right">${getMonthShortName(i)}</th>`;
+                }
+                headHTML += '</tr>';
+                headElement.innerHTML = headHTML;
+
+                // Body
+                let bodyHTML = '';
+                const sortedMembers = [...allMembers].sort((a, b) => a.name.localeCompare(b.name));
+                sortedMembers.forEach(member => {
+                    bodyHTML += `<tr class="border-b"><td class="p-2 font-medium">${member.name}</td>`;
+                    for (let i = 1; i <= 12; i++) {
+                        const transaction = allTransactions.find(t => t.userId === member.id && t.month === i && t.type === type);
+                        const amount = transaction ? transaction.amount : 0;
+                        const editableClass = currentUserData.isAdmin ? 'editable-cell cursor-pointer' : '';
+                        bodyHTML += `<td class="p-1 text-right tabular-nums ${editableClass}" data-member-id="${member.id}" data-month="${i}" data-type="${type}">${formatCurrencySimple(amount)}</td>`;
+                    }
+                    bodyHTML += '</tr>';
+                });
+                bodyElement.innerHTML = bodyHTML;
+
+                // Add event listeners for admin ONLY
+                if (currentUserData.isAdmin) {
+                    bodyElement.querySelectorAll('.editable-cell').forEach(cell => {
+                        cell.addEventListener('dblclick', makeCellEditable);
+                    });
+                }
+            };
+
+            renderTable('save', transactionsSavingsHead, transactionsSavingsBody);
+            renderTable('repay', transactionsRepaymentsHead, transactionsRepaymentsBody);
+            renderTable('borrow', transactionsBorrowedHead, transactionsBorrowedBody);
+        }
+        
+        // --- Other Page Render Stubs ---
+        function renderLoanRecon() {
+            if (!reconStatementsContainer) return;
+            // TODO: Implement loan reconciliation logic
+            reconStatementsContainer.innerHTML = `<p class="text-center text-gray-500">Loan reconciliation view is under construction.</p>`;
+        }
+
+        function renderFutureValue() {
+            if (!futureValueContainer) return;
+            // TODO: Implement future value logic
+            futureValueContainer.innerHTML = `<p class="text-center text-gray-500">Future value projection is under construction.</p>`;
+        }
+        
+        function renderPenalties() {
+            if (!penaltiesContainer || !penaltyAdminPanel) return;
+            
+            if (currentUserData && currentUserData.isAdmin && allMembers.length > 0) {
+                const select = document.getElementById('penalty-member-select');
+                const existingValue = select.value;
+                let optionsHTML = '<option value="">Select Member...</option>';
+                allMembers.sort((a, b) => a.name.localeCompare(b.name)).forEach(member => {
+                    optionsHTML += `<option value="${member.id}">${member.name}</option>`;
+                });
+                select.innerHTML = optionsHTML;
+                select.value = existingValue; // Preserve selection
+            }
+
+            // TODO: Display penalties table
+            penaltiesContainer.innerHTML = `<p class="text-center text-gray-500">Penalties table view is under construction.</p>`;
+        }
+
+        // --- Deposit Page Rendering & Logic ---
+        function renderDepositPage() {
+            if (!groupConfig) return;
+
+            const { isDepositPeriodOpen, depositMonth } = groupConfig;
+            const monthName = depositMonth ? getMonthName(depositMonth) : '';
+
+            depositStatusText.textContent = isDepositPeriodOpen ? `Open for ${monthName}` : 'Closed';
+            depositStatusText.className = `font-bold ${isDepositPeriodOpen ? 'text-green-600' : 'text-red-600'}`;
+
+            if (isDepositPeriodOpen) {
+                depositPeriodMessage.textContent = `The deposit period for ${monthName} is now open. Please submit your declaration.`;
+                depositPeriodMessage.className = 'text-center font-semibold mb-6 p-3 rounded-md bg-green-100 text-green-800';
+                depositFieldset.disabled = false;
+            } else {
+                depositPeriodMessage.textContent = 'The deposit period is currently closed.';
+                depositPeriodMessage.className = 'text-center font-semibold mb-6 p-3 rounded-md bg-yellow-100 text-yellow-800';
+                depositFieldset.disabled = true;
+            }
+        }
+        
+        // --- EVENT HANDLERS & ACTIONS ---
+        async function handleAttendanceClick(e) {
+            if (!currentUserData.isAdmin || !e.target.matches('.attendance-cell')) {
+                return;
+            }
+
+            const cell = e.target;
+            const userId = cell.dataset.userId;
+            const month = cell.dataset.month;
+            const currentStatus = cell.dataset.status;
+
+            const statusCycle = {
+                'none': 'present',
+                'present': 'late',
+                'late': 'absent',
+                'absent': 'none',
+            };
+
+            const newStatus = statusCycle[currentStatus];
+            
+            try {
+                const attendanceRef = doc(db, "groups", GROUP_ID, "attendance", userId);
+                if (newStatus === 'none') {
+                    // If the new status is 'none', remove the field from the document
+                    await updateDoc(attendanceRef, { [month]: deleteField() });
+                } else {
+                    // Otherwise, set or update the field
+                    await setDoc(attendanceRef, { [month]: newStatus }, { merge: true });
+                }
+                // No need for a toast here, the UI update is instant and feels more responsive
+            } catch (error) {
+                console.error("Error updating attendance:", error);
+                showToast("Failed to update attendance.", true);
+            }
+        }
+
+        async function handleOpenDeposits() {
+            const month = parseInt(depositMonthSelect.value);
+            if (isNaN(month)) {
+                showToast('Please select a valid month.', true);
+                return;
+            }
+            const groupRef = doc(db, "groups", GROUP_ID);
+            try {
+                await updateDoc(groupRef, {
+                    isDepositPeriodOpen: true,
+                    depositMonth: month
+                });
+                showToast(`Deposit period opened for ${getMonthName(month)}.`);
+            } catch (error) {
+                console.error("Error opening deposits:", error);
+                showToast('Failed to open deposits.', true);
+            }
+        }
+
+        async function handleCloseDeposits() {
+            const groupRef = doc(db, "groups", GROUP_ID);
+            try {
+                await updateDoc(groupRef, {
+                    isDepositPeriodOpen: false
+                });
+                showToast('Deposit period has been closed.');
+            } catch (error) {
+                console.error("Error closing deposits:", error);
+                showToast('Failed to close deposits.', true);
+            }
+        }
+        
+        async function handleSubmitDeclaration(e) {
+            e.preventDefault();
+            if (!groupConfig.isDepositPeriodOpen || !currentUserData) return;
+
+            const saveAmount = parseFloat(document.getElementById('save-amount').value) || 0;
+            const repayAmount = parseFloat(document.getElementById('repay-amount').value) || 0;
+            const borrowAmount = parseFloat(document.getElementById('borrow-amount').value) || 0;
+            
+            try {
+                const batch = writeBatch(db);
+                const month = groupConfig.depositMonth;
+
+                const declarationRef = doc(db, "groups", GROUP_ID, "declarations", `${currentUserData.id}_${month}`);
+                batch.set(declarationRef, {
+                    userId: currentUserData.id,
+                    userName: currentUserData.name,
+                    month: month,
+                    saveAmount,
+                    repayAmount,
+                    borrowAmount,
+                    declaredAt: Timestamp.now()
+                }, { merge: true });
+
+                // Add transactions for save and repay directly from declaration
+                if (saveAmount > 0) {
+                    const saveTransRef = doc(collection(db, "groups", GROUP_ID, "transactions"));
+                    batch.set(saveTransRef, {
+                        userId: currentUserData.id,
+                        month: month,
+                        type: 'save',
+                        amount: saveAmount,
+                        date: Timestamp.now()
+                    });
+                }
+                if (repayAmount > 0) {
+                    const repayTransRef = doc(collection(db, "groups", GROUP_ID, "transactions"));
+                    batch.set(repayTransRef, {
+                        userId: currentUserData.id,
+                        month: month,
+                        type: 'repay',
+                        amount: repayAmount,
+                        date: Timestamp.now()
+                    });
+                }
+
+                if (borrowAmount > 0) {
+                    const loanRef = doc(collection(db, "groups", GROUP_ID, "loans"));
+                    batch.set(loanRef, {
+                        userId: currentUserData.id,
+                        amount: borrowAmount,
+                        requestDate: Timestamp.now(),
+                        status: 'pending'
+                    });
+
+                    // Also add the 'borrow' transaction immediately
+                    const borrowTransRef = doc(collection(db, "groups", GROUP_ID, "transactions"));
+                    batch.set(borrowTransRef, {
+                        userId: currentUserData.id,
+                        month: month,
+                        type: 'borrow',
+                        amount: borrowAmount,
+                        date: Timestamp.now()
+                    });
+                }
+                
+                await batch.commit();
+                showToast('Your declaration has been submitted successfully!');
+                depositForm.reset();
+                validateDeclarationForm(); // Re-validate to disable button
+
+            } catch (error) {
+                console.error("Error submitting declaration: ", error);
+                showToast("Failed to submit declaration.", true);
+            }
+        }
+
+        async function handleSubmitLoanRequest(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('loan-amount').value);
+            if (isNaN(amount) || amount <= 0) {
+                showToast("Please enter a valid loan amount.", true);
+                return;
+            }
+            
+            try {
+                await addDoc(collection(db, "groups", GROUP_ID, "loans"), {
+                    userId: currentUserData.id,
+                    amount: amount,
+                    requestDate: Timestamp.now(),
+                    status: 'pending'
+                });
+                showToast("Loan request submitted successfully!");
+                loanRequestForm.reset();
+                showView('myLoans');
+            } catch (error) {
+                console.error("Error submitting loan request:", error);
+                showToast("Failed to submit loan request.", true);
+            }
+        }
+
+        async function handleApproveLoan(e) {
+            const loanId = e.target.closest('tr').dataset.loanId;
+            const loanRef = doc(db, "groups", GROUP_ID, "loans", loanId);
+            try {
+                // The 'borrow' transaction is now created at declaration time.
+                // This function just needs to approve the loan status.
+                await updateDoc(loanRef, { status: 'approved' });
+                showToast('Loan approved successfully!');
+            } catch (error) {
+                console.error("Error approving loan: ", error);
+                showToast('Error approving loan.', true);
+            }
+        }
+
+        function handleRejectLoan(e) {
+            loanIdToReject = e.target.closest('tr').dataset.loanId;
+            rejectionModal.classList.remove('hidden');
+        }
+
+        async function handleSubmitRejection() {
+            const reasonEl = document.querySelector('input[name="rejection-reason"]:checked');
+            if (!reasonEl) {
+                document.getElementById('rejection-error').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('rejection-error').classList.add('hidden');
+            const reason = reasonEl.value;
+
+            if (!loanIdToReject) return;
+
+            const loanRef = doc(db, "groups", GROUP_ID, "loans", loanIdToReject);
+            try {
+                await updateDoc(loanRef, {
+                    status: 'rejected',
+                    rejectionReason: reason
+                });
+                showToast("Loan has been rejected.");
+                rejectionModal.classList.add('hidden');
+                loanIdToReject = null;
+            } catch (error) {
+                console.error("Error rejecting loan:", error);
+                showToast("Failed to reject loan.", true);
+            }
+        }
+
+        function updateTotalPenalty() {
+            let total = 0;
+            document.querySelectorAll('input[name="penalty-reason"]:checked').forEach(cb => {
+                total += parseInt(cb.dataset.value);
+            });
+            penaltyTotalDisplay.textContent = `ZMW ${total}`;
+        }
+
+        async function handleAddPenalty(e) {
+            e.preventDefault();
+            const memberId = document.getElementById('penalty-member-select').value;
+            const month = parseInt(document.getElementById('penalty-month-select').value);
+            const reasons = Array.from(document.querySelectorAll('input[name="penalty-reason"]:checked')).map(cb => cb.value);
+            const totalAmount = Array.from(document.querySelectorAll('input[name="penalty-reason"]:checked')).reduce((sum, cb) => sum + parseInt(cb.dataset.value), 0);
+
+            if (!memberId || isNaN(month) || reasons.length === 0) {
+                showToast('Please fill out all penalty fields.', true);
+                return;
+            }
+            
+            try {
+                await addDoc(collection(db, "groups", GROUP_ID, "penalties"), {
+                    userId: memberId,
+                    month: month,
+                    reasons: reasons,
+                    amount: totalAmount,
+                    createdAt: Timestamp.now()
+                });
+                showToast('Penalty added successfully!');
+                penaltyForm.reset();
+                updateTotalPenalty();
+            } catch (error) {
+                console.error("Error adding penalty:", error);
+                showToast('Failed to add penalty.', true);
+            }
+        }
+        
+        // --- Editable Cells Logic (Admin) ---
+        function makeCellEditable(e) {
+            const cell = e.currentTarget;
+            if (cell.querySelector('input')) return; // Already in edit mode
+
+            const originalValue = cell.textContent.replace(/,/g, '') || '0';
+            cell.innerHTML = `<input type="text" value="${originalValue}" class="w-full text-right"/>`;
+            const input = cell.querySelector('input');
+            input.focus();
+            input.select();
+
+            input.addEventListener('blur', () => saveCell(cell, input.value));
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    input.blur();
+                } else if (e.key === 'Escape') {
+                    revertCell(cell, originalValue);
+                }
+            });
+        }
+        
+        async function saveCell(cell, newValue) {
+            const memberId = cell.dataset.memberId;
+            const month = parseInt(cell.dataset.month);
+            const type = cell.dataset.type;
+            const amount = parseFloat(newValue) || 0;
+            
+            cell.innerHTML = formatCurrencySimple(amount);
+
+            try {
+                const batch = writeBatch(db);
+
+                // Find and delete existing transactions for this member/month/type
+                const q = query(collection(db, "groups", GROUP_ID, "transactions"), 
+                    where("userId", "==", memberId),
+                    where("month", "==", month),
+                    where("type", "==", type)
+                );
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach((doc) => {
+                    batch.delete(doc.ref);
+                });
+
+                // Add the new transaction if amount is not zero
+                if (amount > 0) {
+                    const newTransRef = doc(collection(db, "groups", GROUP_ID, "transactions"));
+                     batch.set(newTransRef, {
+                        userId: memberId,
+                        month: month,
+                        type: type,
+                        amount: amount,
+                        date: Timestamp.fromDate(new Date(2025, month-1, 15)) // Arbitrary date in the month
+                    });
+                }
+               
+                await batch.commit();
+                showToast('Transaction updated successfully!');
+            } catch (error) {
+                 console.error("Error updating transaction: ", error);
+                 showToast('Error updating transaction.', true);
+                 const originalTransaction = allTransactions.find(t => t.userId === memberId && t.month === month && t.type === type);
+                 cell.innerHTML = formatCurrencySimple(originalTransaction ? originalTransaction.amount : 0);
+            }
+        }
+        
+        function revertCell(cell, originalValue) {
+             cell.innerHTML = formatCurrencySimple(parseFloat(originalValue));
+        }
+
+        // --- CALCULATION LOGIC ---
+        function calculateAllMemberStats() {
+            if (!allMembers.length) return [];
+
+            // 1. Calculate group-wide totals first
+            const totalGroupRepayments = allTransactions.filter(t => t.type === 'repay').reduce((sum, t) => sum + t.amount, 0);
+            const totalGroupLoansOut = allTransactions.filter(t => t.type === 'borrow').reduce((sum, t) => sum + t.amount, 0);
+            const totalGroupSavings = allTransactions.filter(t => t.type === 'save').reduce((sum, t) => sum + t.amount, 0);
+            const totalGroupPenalties = allPenalties.reduce((sum, p) => sum + p.amount, 0);
+
+            // Profit is the interest portion of repayments (assuming 10% interest for this example) plus penalties.
+            // This is a simplified model. A real model would track principal vs. interest.
+            const interestRate = 0.10; 
+            const totalInterestPaid = (totalGroupRepayments / (1 + interestRate)) * interestRate; // Approximate interest
+            const totalGroupProfit = totalInterestPaid + totalGroupPenalties;
+
+            // 2. Calculate stats for each member
+            return allMembers.map(member => {
+                if (!member) return null;
+                
+                const totalSavings = allTransactions
+                    .filter(t => t.userId === member.id && t.type === 'save')
+                    .reduce((sum, t) => sum + t.amount, 0);
+
+                const totalRepaid = allTransactions
+                    .filter(t => t.userId === member.id && t.type === 'repay')
+                    .reduce((sum, t) => sum + t.amount, 0);
+
+                const totalBorrowed = allTransactions
+                    .filter(t => t.userId === member.id && t.type === 'borrow')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                // Assuming 10% interest on borrowed amount to calculate loan balance
+                const loanBalance = (totalBorrowed * (1 + interestRate)) - totalRepaid;
+                
+                const totalPenalties = allPenalties
+                    .filter(p => p.userId === member.id)
+                    .reduce((sum, p) => sum + p.amount, 0);
+
+                // --- NEW Column Calculations ---
+                const earned = totalGroupSavings > 0 ? (totalSavings / totalGroupSavings) * totalGroupProfit : 0;
+                const maxLeverage = totalSavings * 2.5; // Logic updated
+                const availableLeverage = maxLeverage - loanBalance;
+                const isEligibleToBorrow = availableLeverage >= 0; // Logic updated to a check
+                const netEarnings = earned - (loanBalance + totalPenalties); // Logic updated
+
+                return {
+                    id: member.id,
+                    name: member.name,
+                    totalSavings,
+                    loanBalance,
+                    totalPenalties,
+                    earned,
+                    maxLeverage,
+                    availableLeverage,
+                    isEligibleToBorrow,
+                    netEarnings
+                };
+            }).filter(Boolean); // Remove any nulls if a member was deleted but their data remains
+        }
+
+        function calculateMonthlyLiquidity() {
+            const monthlyData = {};
+            let openingBalance = 0;
+
+            for (let i = 1; i <= 12; i++) {
+                const savings = allTransactions.filter(t => t.month === i && t.type === 'save').reduce((sum, t) => sum + t.amount, 0);
+                const repayments = allTransactions.filter(t => t.month === i && t.type === 'repay').reduce((sum, t) => sum + t.amount, 0);
+                const loansOut = allTransactions.filter(t => t.month === i && t.type === 'borrow').reduce((sum, t) => sum + t.amount, 0);
+                
+                const balanceBf = openingBalance;
+                const totalIn = balanceBf + savings + repayments;
+                const liquidity = totalIn - loansOut;
+
+                monthlyData[i] = {
+                    balanceBf,
+                    savings,
+                    repayments,
+                    totalIn,
+                    loansOut,
+                    liquidity
+                };
+                
+                openingBalance = liquidity; // The closing balance for this month is the opening for the next
+            }
+            return monthlyData;
+        }
+
     </script>
 </body>
 </html>
+
+
 
