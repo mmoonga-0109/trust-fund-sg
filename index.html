@@ -700,33 +700,37 @@
 
         // --- AUTHENTICATION ---
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                // User is signed in.
-                const userDocRef = doc(db, "users", user.uid);
-                const docSnap = await getDoc(userDocRef);
+            try {
+                if (user) {
+                    const userDocRef = doc(db, "users", user.uid);
+                    const docSnap = await getDoc(userDocRef);
 
-                if (docSnap.exists()) {
-                    currentUserData = { id: user.uid, ...docSnap.data() };
-                    currentUser = user;
-                    setupListeners(); // Setup data listeners
-                    appContainer.classList.remove('hidden');
-                    loginContainer.classList.add('hidden');
-                    authLoader.classList.add('hidden');
-                    viewLoader.classList.remove('hidden');
+                    if (docSnap.exists()) {
+                        currentUserData = { id: user.uid, ...docSnap.data() };
+                        currentUser = user;
+                        setupListeners(); 
+                        appContainer.classList.remove('hidden');
+                        loginContainer.classList.add('hidden');
+                        authLoader.classList.add('hidden');
+                        viewLoader.classList.remove('hidden');
+                    } else {
+                        await signOut(auth);
+                        showToast("Could not find user profile.", true);
+                    }
                 } else {
-                    signOut(auth);
-                    showToast("Could not find user profile.", true);
+                    appContainer.classList.add('hidden');
+                    loginContainer.classList.remove('hidden');
+                    authLoader.classList.add('hidden');
+                    viewLoader.classList.add('hidden');
+                    loginForm.classList.remove('hidden');
+                    registerForm.classList.add('hidden');
+                    currentUser = null;
+                    currentUserData = null;
                 }
-            } else {
-                // User is signed out.
-                appContainer.classList.add('hidden');
-                loginContainer.classList.remove('hidden');
-                authLoader.classList.add('hidden');
-                viewLoader.classList.add('hidden');
-                loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-                currentUser = null;
-                currentUserData = null;
+            } catch (error) {
+                console.error("Authentication state error:", error);
+                showToast("An error occurred. Please try again.", true);
+                signOut(auth);
             }
         });
         
@@ -793,9 +797,9 @@
             registerForm.classList.add('hidden');
             loginForm.classList.remove('hidden');
         });
-
+        
         // The rest of the script (render functions, calculations, etc.) remains unchanged.
-        // ...
+        // ... (all other functions are here)
     </script>
 </body>
 </html>
